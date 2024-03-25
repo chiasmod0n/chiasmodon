@@ -117,11 +117,13 @@ class ChiasmodonCLI(Chiasmodon):
                     self.options.output,
                     '\n'.join([':'.join(i) if type(i) == list else i for i in self.result]) 
                 )
+            
             if self.options.output_type == "csv":
                 ULIT.wFile(
                     self.options.output,
                     '\n'.join([','.join(i) if type(i) == list else i for i in self.result]) 
                 )
+
             if self.options.output_type == "json":
                 ULIT.wJsonToFile(
                     self.options.output,
