@@ -99,8 +99,6 @@ class ChiasmodonCLI(Chiasmodon):
         
         elif view_type in list(self.VIEW_TYPE.keys())[0x1:]:
             if ':http' in  (beta.url or '') :return
-            if '@example.com' in (beta.url or ''):return 
-            if 'personal.example.com' in (beta.url or ''):return 
             
             if view_type in ['email','username', 'password']:
                 self.print(f"{self.T.MAGENTA}> " +self.T.GREEN+beta+self.T.RESET, ys)
