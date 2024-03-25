@@ -31,7 +31,10 @@ Chiasmodon niger is a species of deep sea fish in the family Chiasmodontidae. It
 ## 🔑 Subscription
 Join us today and unlock the potential of our cutting-edge OSINT tool. Contact https://t.me/Chiasmod0n on Telegram to subscribe and start harnessing the power of Chiasmodon for your domain investigations.
 
-
+## Install
+```bash
+pip install chiasmodon
+```
 ## 💻Usage
 Chiasmodon provides a flexible and user-friendly command-line interface and python library. Here are some examples to demonstrate its usage:
 
@@ -45,7 +48,7 @@ obj = ch(token)
 
 - **Searching for a target domain**:
     - *Command line*
-        ```
+        ```bash
         chiasmodon_cli.py --domain example.com
         ```
     - *Python*
@@ -58,7 +61,7 @@ obj = ch(token)
 
 - **Searching for a target domain and its subdomains**:
     - *Command line*
-        ```
+        ```bash
         chiasmodon_cli.py --domain example.com --all
         ```
     - *Python*
@@ -71,7 +74,7 @@ obj = ch(token)
 
 - **Searching for a target application ID on the Google Play Store**:
     - *Command line*
-        ``` 
+        ```bash
         chiasmodon_cli.py --app com.discord
         ```
     - *Python*
@@ -84,7 +87,7 @@ obj = ch(token)
 
 - **Searching for a target ASN**:
     - *Command line*
-        ``` 
+        ```bash
         chiasmodon_cli.py --asn AS123 --view-type cred
         ```
     - *Python*
@@ -98,7 +101,7 @@ obj = ch(token)
 
 - **earching for a target username**:
     - *Command line*
-        ``` 
+        ```bash
         chiasmodon_cli.py --username someone
         ```
     - *Python*
@@ -112,7 +115,7 @@ obj = ch(token)
 - **Searching for a target password**:
 
     - *Command line*
-        ``` 
+        ```bash
         chiasmodon_cli.py --password example@123
         ```
     - *Python*
@@ -126,7 +129,7 @@ obj = ch(token)
 - **Searching for a target CIDR**:
 
     - *Command line*
-        ``` 
+        ```bash
         chiasmodon_cli.py --cidr x.x.x.x/24
         ```
     - *Python*
@@ -140,7 +143,7 @@ obj = ch(token)
 - **Searching for target credentials by domain emails**:
 
     - *Command line*
-        ``` 
+        ```bash
         chiasmodon_cli.py --domain example.com --domain-emails
         ```
     - *Python*
