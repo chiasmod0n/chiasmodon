@@ -63,7 +63,7 @@ class Chiasmodon:
                 self.print(f'{self.T.RED}{self.msg}{self.T.RESET}')
                 sys.exit()
     
-    def filter_domain(d) -> str:
+    def filter_domain(self,d) -> str:
         x = tldextract.extract(d)
         if x.subdomain:return '{}.{}.{}'.format(x.subdomain,x.domain, x.suffix)
         else:return '{}.{}'.format(x.domain, x.suffix)
