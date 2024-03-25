@@ -2,9 +2,10 @@
 import sys
 import time
 import requests
+import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.12"
+VERSION = "0.2.13"
 
 class Chiasmodon:
     API_URL         = 'https://chiasmodon.club/v2/api/beta'
@@ -61,6 +62,11 @@ class Chiasmodon:
             else:
                 self.print(f'{self.T.RED}{self.msg}{self.T.RESET}')
                 sys.exit()
+    
+    def filter_domain(d) -> str:
+        x = tldextract.extract(d)
+        if x.subdomain:return '{}.{}.{}'.format(x.subdomain,x.domain, x.suffix)
+        else:return '{}.{}'.format(x.domain, x.suffix)
 
     def print(self,text, ys=None, ys_err=False) -> None:
         if self.debug:
@@ -100,6 +106,7 @@ class Chiasmodon:
 
     def __proc_query(self, 
                     method:str, 
+
                     query:str, 
                     view_type:str, 
                     timeout:int,
@@ -244,6 +251,8 @@ class Chiasmodon:
         
         self.err = False
         self.msg = ''
+
+        if method == 'domain':query = self.filter_domain(query)
 
         result = self.__proc_query(
             method=method,
