@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!python
 
 import os
 import sys
@@ -223,11 +223,11 @@ if __name__ == "__main__":
     
     parser.epilog  = f'''
 Examples:
-    # Search for target domain and target subdomains
-    {Path(sys.argv[0]).name} --domain example.com --all
+    # Search for target domain
+    {Path(sys.argv[0]).name} --domain example.com 
     
-    # Search for target domain, you will see the result for only this "example.com" 
-    {Path(sys.argv[0]).name} --domain example.com
+    # Search for target domain and target subdomains    
+    {Path(sys.argv[0]).name} --domain example.com --all
 
     # search for target app id 
     {Path(sys.argv[0]).name} --app com.discord 

@@ -45,20 +45,6 @@ from pychiasmodon import Chiasmodon as ch
 token = "PUT_HERE_YOUR_API_KEY"
 obj = ch(token)
 ```
-
-- **Searching for a target domain**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --domain example.com
-        ```
-    - *Python*
-        ```python
-        result = obj.search('example.com',method='domain')
-        
-        for i in result:
-            print(i)
-        ```
-
 - **Searching for a target domain and its subdomains**:
     - *Command line*
         ```bash
@@ -71,6 +57,21 @@ obj = ch(token)
         for i in result:
             print(i)
         ```
+
+- **Searching for a target domain, you will see the result for only this "example.com"**:
+    - *Command line*
+        ```bash
+        chiasmodon_cli.py --domain example.com
+        ```
+    - *Python*
+        ```python
+        result = obj.search('example.com',method='domain')
+        
+        for i in result:
+            print(i)
+        ```
+
+
 
 - **Searching for a target application ID on the Google Play Store**:
     - *Command line*
