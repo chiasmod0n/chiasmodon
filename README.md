@@ -31,7 +31,7 @@ Chiasmodon niger is a species of deep sea fish in the family Chiasmodontidae. It
 ## 🔑 Subscription
 Join us today and unlock the potential of our cutting-edge OSINT tool. Contact https://t.me/Chiasmod0n on Telegram to subscribe and start harnessing the power of Chiasmodon for your domain investigations.
 
-## Install
+## ⬇️Install
 ```bash
 pip install chiasmodon
 ```
