@@ -16,7 +16,7 @@ Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the
 - [x] **⚙️Additional Options**: The tool offers various additional options, such as viewing different result types (credentials, URLs, subdomains, emails, passwords, usernames, or applications), setting API tokens, specifying timeouts, limiting results, and more.
 
 
-## 🚀Comping soon
+## 🚀Comming soon
 
 - **📱Phone**: Get ready to uncover even more valuable data by searching for information associated with phone numbers. Whether you're investigating a particular individual or looking for connections between phone numbers and other entities, this new feature will provide you with valuable insights.
 
