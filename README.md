@@ -155,15 +155,15 @@ obj = ch(token)
         ```
 - **All methods and view types**:
 
-    | View type | Methods |
+    | Methods | View Type               |
     |-----------------|-----------------|
-    | cred      | domain, email, cidr, app, asn, username, password |
-    | app       | cidr, asn, email, username, password        |
-    | url       | domain, email, cidr, asn, username, password |
-    | subdomain | domain                                      |
-    | email     | domain, cidr, asn, app                      |
-    | username  | domain, cidr, app, asn, email, password     |
-    | password  | domain, cidr, app, asn, email, username     |
+    | --domain, --email, --cidr, --app, --asn, --username, --password | --view-type cred        |
+    | --cidr, --asn, --email, --username, --password        | --view-type app |       
+    | --domain, --email, --cidr, --asn, --username, --password | --view-type url      
+    | --domain                                      |--view-type subdomain |
+    | --domain, --cidr, --asn, --app                      |--view-type email     | 
+    | --domain, --cidr, --app, --asn, --email, --password     |--view-type username  |
+    | --domain, --cidr, --app, --asn, --email, --username     |--view-type password  |
 
 Please note that these examples represent only a fraction of the available options and use cases. Refer to the documentation for more detailed instructions and explore the full range of features provided by Chiasmodon.
 
