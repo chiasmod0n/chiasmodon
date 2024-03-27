@@ -15,7 +15,6 @@ Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the
 - [x] **📋Output Customization**: Choose the desired output format (text, JSON, or CSV) and specify the filename to save the search results.
 - [x] **⚙️Additional Options**: The tool offers various additional options, such as viewing different result types (credentials, URLs, subdomains, emails, passwords, usernames, or applications), setting API tokens, specifying timeouts, limiting results, and more.
 
-
 ## 🚀Comming soon
 
 - **📱Phone**: Get ready to uncover even more valuable data by searching for information associated with phone numbers. Whether you're investigating a particular individual or looking for connections between phone numbers and other entities, this new feature will provide you with valuable insights.
@@ -154,6 +153,17 @@ obj = ch(token)
         for i in result:
             print(i)
         ```
+- **All methods and view types**:
+
+    | View type | Methods |
+    |-----------------|-----------------|
+    | cred      | domain, email, cidr, app, asn, username, password |
+    | app       | cidr, asn, email, username, password        |
+    | url       | domain, email, cidr, asn, username, password |
+    | subdomain | domain                                      |
+    | email     | domain, cidr, asn, app                      |
+    | username  | domain, cidr, app, asn, email, password     |
+    | password  | domain, cidr, app, asn, email, username     |
 
 Please note that these examples represent only a fraction of the available options and use cases. Refer to the documentation for more detailed instructions and explore the full range of features provided by Chiasmodon.
 
