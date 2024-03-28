@@ -228,7 +228,7 @@ class Chiasmodon:
                query,
                method='domain',
                view_type='cred',
-               limit=100,
+               limit=10000,
                all=False,
                only_domain_emails=False,
                timeout=60,
