@@ -155,7 +155,7 @@ obj = ch(token)
         ```
 - **All methods and view types**:
 
-    | Methods | View Type               |
+    | Methods | View Type   |
     |-----------------|-----------------|
     | --domain, --email, --cidr, --app, --asn, --username, --password | --view-type cred        |
     | --cidr, --asn, --email, --username, --password        | --view-type app |       
@@ -184,3 +184,4 @@ Chiasmodon is intended for legal and authorized use only. Users are responsible 
 
 Chiasmodon is the result of collaborative efforts from a dedicated team of contributors who believe in the power of OSINT. We would like to express our gratitude to the open-source community for their valuable contributions and support.
 
+[![](https://starchart.cc/chiasmod0n/chiasmodon.svg)](https://starchart.cc/chiasmod0n/chiasmodon)
