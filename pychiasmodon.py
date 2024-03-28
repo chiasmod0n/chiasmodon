@@ -318,7 +318,7 @@ class Result(dict):
         if key in self:
             return self[key]
         else:
-            raise AttributeError(f"'MyDict' object has no attribute '{key}'")
+            raise AttributeError(f"'Result' object has no attribute '{key}'")
 
     def __setattr__(self, key, value):
         self[key] = value
