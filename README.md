@@ -184,4 +184,4 @@ Chiasmodon is intended for legal and authorized use only. Users are responsible 
 
 Chiasmodon is the result of collaborative efforts from a dedicated team of contributors who believe in the power of OSINT. We would like to express our gratitude to the open-source community for their valuable contributions and support.
 
-[![star time](https://starchart.cc/chiasmod0n/chiasmodon.svg)](https://starchart.cc/chiasmod0n/chiasmodon)
+[![star time](https://starchart.cc/chiasmod0n/chiasmodon.svg?variant=adaptive)](https://starchart.cc/chiasmod0n/chiasmodon)
