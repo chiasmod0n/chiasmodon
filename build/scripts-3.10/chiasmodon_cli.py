@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!python
 
 import os
 import sys
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     parser.add_argument('-de','--domain-emails',help='only result for company domain, this option work only with -d or --domain, default is False',action='store_true', default=False)
 
     parser.add_argument('-T','--timeout',       help='request timeout default is 60.',type=int, default=60)
-    parser.add_argument('-L','--limit',         help='limit results default is 10000.',type=int, default=100)
+    parser.add_argument('-L','--limit',         help='limit results default is 100.',type=int, default=100)
 
     parser.add_argument('-v','--version',         help='version.',action='store_true')
     #parser.add_argument('-D','--debug',         help='debug mode default is false.',action='store_true', default=False)
