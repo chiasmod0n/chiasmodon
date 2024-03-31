@@ -5,10 +5,10 @@ import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.20"
+VERSION = "0.2.21"
 
 class Chiasmodon:
-    API_URL         = 'https://chiasmodon.club/v2/api/beta'
+    API_URL         = 'https://beta.chiasmodon.com/v2/api/beta'
     API_HEADERS     = {'user-agent':'cli/python'}
     VIEW_TYPE = {
         'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password'],
