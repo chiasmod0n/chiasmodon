@@ -135,15 +135,15 @@ class ChiasmodonCLI(Chiasmodon):
     def proc(self):
          
         if self.options.email:
-            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.email)).is_file() else [self.options.email.strip()]
+            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.email)).is_file() else [self.options.email.strip().lower()]
             method = 'email'
 
         if self.options.domain:
-            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.domain)).is_file() else [self.options.domain.strip()]
+            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.domain)).is_file() else [self.options.domain.strip().lower()]
             method = 'domain'
 
         if self.options.asn:
-            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.asn)).is_file() else [self.options.asn.strip()]
+            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.asn)).is_file() else [self.options.asn.strip().lower()]
             method = 'asn'
 
         if self.options.cidr:
@@ -151,7 +151,7 @@ class ChiasmodonCLI(Chiasmodon):
             method = 'cidr'
       
         if self.options.app:
-            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.app)).is_file() else [self.options.app.strip()]
+            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.app)).is_file() else [self.options.app.strip().lower()]
             method='app'
 
         if self.options.username:
