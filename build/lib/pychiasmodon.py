@@ -139,11 +139,7 @@ class Chiasmodon:
                 )
 
             if process_info and process_info.get('count') == 0:
-                if method == 'domain' and not all:
-                    self.print(f"{self.T.RED}Not found result\nTo view more result try: --all  {self.T.RESET}", sp,ys_err=True)
-                else:
-                    self.print(f"{self.T.RED}Not found result{self.T.RESET}", sp,ys_err=True)
-
+                self.print(f"{self.T.RED}Not found result{self.T.RESET}", sp,ys_err=True)
                 sp.fail("💥 ")
                 sp.stop()
                 return result 
