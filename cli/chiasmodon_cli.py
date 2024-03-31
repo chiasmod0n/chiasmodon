@@ -230,11 +230,8 @@ Examples:
     {Path(sys.argv[0]).name} --domain example.com
 
     # search for target app id 
-    {Path(sys.argv[0]).name} --app com.discord 
+    {Path(sys.argv[0]).name} --app com.example 
     
-    # Search for like target app id
-    {Path(sys.argv[0]).name} --app discord --all
-
     # Search for target asn
     {Path(sys.argv[0]).name} --asn AS123 --type-view cred
 

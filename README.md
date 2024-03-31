@@ -79,7 +79,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('com.discord',method='app')
+        result = obj.search('com.example',method='app')
 
         for i in result:
             print(i)
