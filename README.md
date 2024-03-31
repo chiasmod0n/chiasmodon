@@ -184,4 +184,14 @@ Chiasmodon is intended for legal and authorized use only. Users are responsible 
 
 Chiasmodon is the result of collaborative efforts from a dedicated team of contributors who believe in the power of OSINT. We would like to express our gratitude to the open-source community for their valuable contributions and support.
 
+## Links
+
+- [Chiasmodon Python Library](https://pypi.org/project/chiasmodon)
+- [Chiasmodon Mobile](https://github.com/chiasmod0n/chiasmodon-mobile)
+- [Chiasmodon Website](https://chiasmodon.club)
+- [Chiasmodon Telegram](https://t.me/chiasmod0n)
+- [Chiasmodon X/Twitter](https://x.com/chiasmod0n)
+
+
 [![star time](https://starchart.cc/chiasmod0n/chiasmodon.svg?variant=adaptive)](https://starchart.cc/chiasmod0n/chiasmodon)
+
