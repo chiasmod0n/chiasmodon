@@ -2,7 +2,7 @@
 # Chiasmodon
 [![asciicast](https://asciinema.org/a/W3jCmEetvRT6JjrBVDyKtSfbg.svg)](https://asciinema.org/a/W3jCmEetvRT6JjrBVDyKtSfbg)
 
-Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the process of gathering information about a target domain. Its primary functionality revolves around searching for domain-related data, including domain emails, domain credentials (usernames and passwords), CIDRs (Classless Inter-Domain Routing), ASNs (Autonomous System Numbers), and subdomains. the tool allows users to search by domain, CIDR, ASN, email, username, password, or Google Play application ID. 
+Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the process of gathering information about target domain. Its primary functionality revolves around searching for domain-related data, including domain emails, domain credentials (usernames and passwords), CIDRs (Classless Inter-Domain Routing), ASNs (Autonomous System Numbers), and subdomains. the tool allows users to search by domain, CIDR, ASN, email, username, password, or Google Play application ID. 
 
 
 
@@ -44,7 +44,7 @@ from pychiasmodon import Chiasmodon as ch
 token = "PUT_HERE_YOUR_API_KEY"
 obj = ch(token)
 ```
-- **Searching for a target domain and its subdomains**:
+- **Search for target subdomains**:
     - *Command line*
         ```bash
         chiasmodon_cli.py --domain example.com --all
@@ -57,7 +57,7 @@ obj = ch(token)
             print(i)
         ```
 
-- **Searching for a target domain, you will see the result for only this "example.com"**:
+- **Searching for target domain, you will see the result for only this "example.com"**:
     - *Command line*
         ```bash
         chiasmodon_cli.py --domain example.com
@@ -70,9 +70,21 @@ obj = ch(token)
             print(i)
         ```
 
+- **Searching for target domain, you will see the result for only this "example.com" on United States**:
+    - *Command line*
+        ```bash
+        chiasmodon_cli.py --domain example.com -C US
+        ```
+    - *Python*
+        ```python
+        result = obj.search('example.com',method='domain',country="US")
+        
+        for i in result:
+            print(i)
+        ```
 
 
-- **Searching for a target application ID on the Google Play Store**:
+- **Searching for target application ID on the Google Play Store**:
     - *Command line*
         ```bash
         chiasmodon_cli.py --app com.discord
@@ -85,7 +97,7 @@ obj = ch(token)
             print(i)
         ```
 
-- **Searching for a target ASN**:
+- **Searching for target ASN**:
     - *Command line*
         ```bash
         chiasmodon_cli.py --asn AS123 --view-type cred
@@ -99,7 +111,7 @@ obj = ch(token)
         ```
 
 
-- **earching for a target username**:
+- **earching for target username**:
     - *Command line*
         ```bash
         chiasmodon_cli.py --username someone
@@ -112,7 +124,7 @@ obj = ch(token)
             print(i)
         ```
 
-- **Searching for a target password**:
+- **Searching for target password**:
 
     - *Command line*
         ```bash
@@ -126,7 +138,7 @@ obj = ch(token)
             print(i)
         ```
 
-- **Searching for a target CIDR**:
+- **Searching for target CIDR**:
 
     - *Command line*
         ```bash

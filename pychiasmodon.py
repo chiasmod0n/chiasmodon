@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
 import sys
 import time
 import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.22"
+VERSION = "0.2.24"
 
 class Chiasmodon:
     API_URL         = 'https://beta.chiasmodon.com/v2/api/beta'
@@ -106,9 +105,9 @@ class Chiasmodon:
 
     def __proc_query(self, 
                     method:str, 
-
                     query:str, 
                     view_type:str, 
+                    country:str,
                     timeout:int,
                     sort:bool, 
                     only_domain_emails:bool,
@@ -121,10 +120,12 @@ class Chiasmodon:
         result : list[Result] = []
 
         data = {
+
             'token':self.token,
             'type-view':view_type,
             'method' : 'search-by-%s' % method,
             'query' : query,
+            'country' : country.upper(),
             'all':'yes' if all else 'no',
             'domain-emails':'yes' if only_domain_emails else 'no',
             'get-info':'yes'
@@ -231,6 +232,7 @@ class Chiasmodon:
     def search(self,
                query,
                method='domain',
+               country='all',
                view_type='cred',
                limit=10000,
                all=False,
@@ -261,6 +263,7 @@ class Chiasmodon:
         result = self.__proc_query(
             method=method,
             query=query,
+            country=country,
             view_type=view_type,
             sort=sort,
             timeout=timeout,

@@ -166,6 +166,7 @@ class ChiasmodonCLI(Chiasmodon):
             self.search(
                 query=i,
                 method=method,
+                country=self.options.country,
                 view_type=self.options.view_type,
                 limit=self.options.limit,
                 all=self.options.all,
@@ -207,8 +208,10 @@ if __name__ == "__main__":
     parser.add_argument('-u','--username',      help='Search by username, only pro account.',type=str)
     parser.add_argument('-p','--password',      help='Search by password, only pro account.',type=str)
 
+    parser.add_argument('-C','--country',       help='sort result by country code default is all', type=str, default='all')
     parser.add_argument('-vt','--view-type',    help='type view the result default is "cred".', choices=Chiasmodon.VIEW_TYPE, type=str, default='cred')
     parser.add_argument('-o','--output',        help='filename to save the result', type=str,)
+
     parser.add_argument('-ot','--output-type',  help='output format default is "text".', choices=['text', 'json', 'csv'], type=str, default='text')
     parser.add_argument('--init',               help='set the api token.',type=str)
 
@@ -223,12 +226,17 @@ if __name__ == "__main__":
     
     parser.epilog  = f'''
 Examples:
-    # Search for target domain and target subdomains
-    {Path(sys.argv[0]).name} --domain example.com --all
-    
-    # Search for target domain, you will see the result for only this "example.com" 
-    {Path(sys.argv[0]).name} --domain example.com
 
+    # Search for target domain, you will see the result for only this "example.com" 
+    {Path(sys.argv[0]).name} --domain example.com 
+    
+    # Search for target subdomains
+    {Path(sys.argv[0]).name} --domain example.com --all 
+
+    
+    # Search for target domain, you will see the result for only this "example.com" on United States 
+    {Path(sys.argv[0]).name} --domain example.com -C US 
+    
     # search for target app id 
     {Path(sys.argv[0]).name} --app com.example 
     
@@ -236,7 +244,7 @@ Examples:
     {Path(sys.argv[0]).name} --asn AS123 --type-view cred
 
     # Search for target username
-    {Path(sys.argv[0]).name} --username someone 
+    {Path(sys.argv[0]).name} --username someone -C CA
 
     # Search for target password
     {Path(sys.argv[0]).name} --password example@123
