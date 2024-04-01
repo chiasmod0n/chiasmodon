@@ -184,7 +184,7 @@ class ChiasmodonCLI(Chiasmodon):
       
 if __name__ == "__main__":
 
-    print(f"""Support: https://t.me/Chiasmod0n\n\n
+    print(f"""
    🙂           🙂                 
   /|\\           /|\\               
   /\\            /\\                                                                                   
