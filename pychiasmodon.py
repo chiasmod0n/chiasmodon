@@ -4,7 +4,7 @@ import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.27"
+VERSION = "0.2.28"
 
 class Chiasmodon:
     API_URL         = 'https://beta.chiasmodon.com/v2/api/beta'
