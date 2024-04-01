@@ -39,6 +39,86 @@ pip install chiasmodon
 Chiasmodon provides a flexible and user-friendly command-line interface and python library. Here are some examples to demonstrate its usage:
 
 
+```
+usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-s ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-C COUNTRY]
+                         [-vt {cred,url,subdomain,email,password,username,app}] [-o OUTPUT] [-ot {text,json,csv}] [--init INIT] [-A] [-de] [-T TIMEOUT] [-L LIMIT]
+                         [-v]
+
+Chiasmodon CLI
+
+options:
+  -h, --help            show this help message and exit
+  -d DOMAIN, --domain DOMAIN
+                        Search by domain.
+  -a APP, --app APP     Search by google play applciton id.
+  -c CIDR, --cidr CIDR  Search by CIDR.
+  -s ASN, --asn ASN     Search by ASN.
+  -e EMAIL, --email EMAIL
+                        Search by email, only pro, only pro account.
+  -u USERNAME, --username USERNAME
+                        Search by username, only pro account.
+  -p PASSWORD, --password PASSWORD
+                        Search by password, only pro account.
+  -C COUNTRY, --country COUNTRY
+                        sort result by country code default is all
+  -vt {cred,url,subdomain,email,password,username,app}, --view-type {cred,url,subdomain,email,password,username,app}
+                        type view the result default is "cred".
+  -o OUTPUT, --output OUTPUT
+                        filename to save the result
+  -ot {text,json,csv}, --output-type {text,json,csv}
+                        output format default is "text".
+  --init INIT           set the api token.
+  -A, --all             view all result using "like",this option work only with (-d or --domain , -a or --app),default is False
+  -de, --domain-emails  only result for company domain, this option work only with -d or --domain, default is False
+  -T TIMEOUT, --timeout TIMEOUT
+                        request timeout default is 60.
+  -L LIMIT, --limit LIMIT
+                        limit results default is 10000.
+  -v, --version         version.
+
+Examples:
+
+    # Search for target domain, you will see the result for only this "example.com"
+    chiasmodon_cli.py --domain example.com
+
+    # Search for target subdomains
+    chiasmodon_cli.py --domain example.com --all
+
+    # Search for target domain, you will see the result for only this "example.com" on United States
+    chiasmodon_cli.py --domain example.com --country US
+
+    # search for target app id
+    chiasmodon_cli.py --app com.example
+
+    # Search for target asn
+    chiasmodon_cli.py --asn AS123 --type-view cred
+
+    # Search for target username
+    chiasmodon_cli.py --username someone --country CA
+
+    # Search for target password
+    chiasmodon_cli.py --password example@123
+
+    # Search for target cidr
+    chiasmodon_cli.py --cidr x.x.x.x/24
+
+    # Search for target creds by domain emsils
+    chiasmodon_cli.py --domain example.com --domain-emails
+    chiasmodon_cli.py --domain example.com --domain-emails --output example-creds.json --output-type json
+    chiasmodon_cli.py --domain example.com --domain-emails --view-type email --output example-emails.txt --output-type text
+
+    # Search for target subdomain
+    chiasmodon_cli.py --domain company.com --view-type subdomain
+
+    # Search for target email
+    chiasmodon_cli.py --email someone@example.com
+    chiasmodon_cli.py --email someone@example.com --view-type url
+
+    # search for multiple targets:
+    chiasmodon_cli.py --domain targets.txt --output example-creds.txt
+    chiasmodon_cli.py --domain targets.txt --view-type url --output example-urls.txt
+```
+
 ***How to use pychiasmodon library***:
 ```python
 from pychiasmodon import Chiasmodon as ch 

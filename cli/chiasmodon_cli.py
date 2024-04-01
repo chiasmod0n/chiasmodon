@@ -232,10 +232,9 @@ Examples:
     
     # Search for target subdomains
     {Path(sys.argv[0]).name} --domain example.com --all 
-
     
     # Search for target domain, you will see the result for only this "example.com" on United States 
-    {Path(sys.argv[0]).name} --domain example.com -C US 
+    {Path(sys.argv[0]).name} --domain example.com --country US 
     
     # search for target app id 
     {Path(sys.argv[0]).name} --app com.example 
@@ -244,7 +243,7 @@ Examples:
     {Path(sys.argv[0]).name} --asn AS123 --type-view cred
 
     # Search for target username
-    {Path(sys.argv[0]).name} --username someone -C CA
+    {Path(sys.argv[0]).name} --username someone --country CA
 
     # Search for target password
     {Path(sys.argv[0]).name} --password example@123
