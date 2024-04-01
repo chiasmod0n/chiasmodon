@@ -12,6 +12,7 @@ Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the
 - [x] **🎮Google Play Application**: Search for information related to a specific application on the Google Play Store by providing the application ID.
 - [x] **🔎CIDR and 🔢ASN**: Explore CIDR blocks and Autonomous System Numbers (ASNs) associated with the target domain to gain insights into network infrastructure and potential vulnerabilities.
 - [x] **✉️Email, 👤Username, 🔒Password**: Conduct searches based on email, username, or password to identify potential security risks or compromised credentials.
+- [X] **🌍Country**: Sort and filter search results by country to gain insights into the geographic distribution of the identified information.
 - [x] **📋Output Customization**: Choose the desired output format (text, JSON, or CSV) and specify the filename to save the search results.
 - [x] **⚙️Additional Options**: The tool offers various additional options, such as viewing different result types (credentials, URLs, subdomains, emails, passwords, usernames, or applications), setting API tokens, specifying timeouts, limiting results, and more.
 
