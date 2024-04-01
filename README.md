@@ -154,7 +154,7 @@ obj = ch(token)
 - **Searching for target domain, you will see the result for only this "example.com" on United States**:
     - *Command line*
         ```bash
-        chiasmodon_cli.py --domain example.com -C US
+        chiasmodon_cli.py --domain example.com --country US
         ```
     - *Python*
         ```python
