@@ -88,8 +88,8 @@ class ChiasmodonCLI(Chiasmodon):
             
             c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Username{self.T.RESET}: {self.T.GREEN}{beta.username}{self.T.RESET}\n" if beta.username else f"{self.T.MAGENTA}> {self.T.YELLOW}Email{self.T.RESET}: {self.T.GREEN}{beta.email}{self.T.RESET}\n"
             c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Password{self.T.RESET}: {self.T.GREEN}{beta.password}{self.T.RESET}\n"
-            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Country{self.T.RESET}: {self.T.RED if beta.country == 'Unknown' else self.T.CYAN}{beta.country}{self.T.RESET}\n"
-            #c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Date{self.T.RESET}: {self.T.BLUE}{beta.date}{self.T.RESET}"
+            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Country{self.T.RESET}: {self.T.RED if beta.country == 'Unknown' else self.T.CYAN}{beta.country}{self.T.RESET}"
+            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Date{self.T.RESET}: {self.T.BLUE}{beta.date}{self.T.RESET}"
             self.print(c, ys)
 
             self.result.append(beta.save_format())
