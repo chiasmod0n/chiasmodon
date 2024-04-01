@@ -139,7 +139,7 @@ class Chiasmodon:
                 )
 
             if process_info and process_info.get('count') == 0:
-                if method == 'domain' and not all:
+                if method == 'domain' and not all and not only_domain_emails:
                     self.print(f"{self.T.RED}Not found result\nTo view more result try: --all  {self.T.RESET}", sp,ys_err=True)
                 else:
                     self.print(f"{self.T.RED}Not found result{self.T.RESET}", sp,ys_err=True)
