@@ -4,7 +4,7 @@ import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.31"
+VERSION = "0.2.32"
 
 class Chiasmodon:
     API_URL         = 'https://beta.chiasmodon.com/v2/api/beta'
@@ -63,7 +63,8 @@ class Chiasmodon:
                 sys.exit()
     
     def filter_domain(self,d) -> str:
-        x = tldextract.extract(d)
+        domain = d.split()[0]
+        x = tldextract.extract(domain)
         if x.subdomain:return '{}.{}.{}'.format(x.subdomain,x.domain, x.suffix)
         else:return '{}.{}'.format(x.domain, x.suffix)
 
