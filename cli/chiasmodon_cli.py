@@ -114,7 +114,7 @@ class ChiasmodonCLI(Chiasmodon):
             if self.options.output_type == "text":
                 ULIT.wFile(
                     self.options.output,
-                    '\n'.join([':'.join(['url/app_id','user/email', 'password', 'country', 'date'])]+[':'.join(i) if type(i) == list else i for i in self.result])  if view_type == 'cred' else  '\n'.join([view_type]+[':'.join(i) if type(i) == list else i for i in self.result]) 
+                    '\n'.join([view_type]+[':'.join(i) if type(i) == list else i for i in self.result]) 
                 )
 
             if self.options.output_type == "csv":
