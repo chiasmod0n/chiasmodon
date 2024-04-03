@@ -81,15 +81,14 @@ class ChiasmodonCLI(Chiasmodon):
             c = ''
             if beta.app_id:
                 c+=f"{self.T.MAGENTA}> {self.T.YELLOW}App ID{self.T.RESET}: {self.T.CYAN}{beta.app_id}{self.T.RESET}\n"
-                if beta.app_name:
-                    c+=f"{self.T.MAGENTA}> {self.T.YELLOW}App name{self.T.RESET}: {self.T.CYAN}{beta.app_name}{self.T.RESET}\n"
-            else:
-                c+=f"{self.T.MAGENTA}> {self.T.YELLOW}URL{self.T.RESET}: {self.T.CYAN}{beta.url}{self.T.RESET}\n"
-            
+                if beta.app_name:c+=f"{self.T.MAGENTA}> {self.T.YELLOW}App name{self.T.RESET}: {self.T.CYAN}{beta.app_name}{self.T.RESET}\n"
+                
+            elif beta.url:c+=f"{self.T.MAGENTA}> {self.T.YELLOW}URL{self.T.RESET}: {self.T.CYAN}{beta.url}{self.T.RESET}\n"
             c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Username{self.T.RESET}: {self.T.GREEN}{beta.username}{self.T.RESET}\n" if beta.username else f"{self.T.MAGENTA}> {self.T.YELLOW}Email{self.T.RESET}: {self.T.GREEN}{beta.email}{self.T.RESET}\n"
             c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Password{self.T.RESET}: {self.T.GREEN}{beta.password}{self.T.RESET}\n"
-            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Country{self.T.RESET}: {self.T.RED if beta.country == 'Unknown' else self.T.CYAN}{beta.country}{self.T.RESET}\n"
+            if beta.country != 'Unknown':c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Country{self.T.RESET}: {self.T.CYAN}{beta.country}{self.T.RESET}\n"
             c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Date{self.T.RESET}: {self.T.BLUE}{beta.date}{self.T.RESET}"
+
             self.print(c, ys)
 
             self.result.append(beta.save_format())
@@ -99,7 +98,7 @@ class ChiasmodonCLI(Chiasmodon):
         
         elif view_type in list(self.VIEW_TYPE.keys())[0x1:]:
             if ':http' in  (beta.url or '') :return
-            
+
             if view_type in ['email','username', 'password']:
                 self.print(f"{self.T.MAGENTA}> " +self.T.GREEN+beta+self.T.RESET, ys)
             if view_type in ['app', 'url']:
@@ -109,7 +108,7 @@ class ChiasmodonCLI(Chiasmodon):
 
             self.result.append(beta.save_format())
     
-    def save_result(self) -> None:
+    def save_result(self, view_type) -> None:
 
         if self.options.output:
             if self.options.output_type == "text":
@@ -117,11 +116,11 @@ class ChiasmodonCLI(Chiasmodon):
                     self.options.output,
                     '\n'.join([':'.join(i) if type(i) == list else i for i in self.result]) 
                 )
-            
+
             if self.options.output_type == "csv":
                 ULIT.wFile(
                     self.options.output,
-                    '\n'.join([','.join(i) if type(i) == list else i for i in self.result]) 
+                    '\n'.join([','.join(['url/app_id','user/email', 'password', 'country', 'date'])]+[','.join(i) if type(i) == list else i for i in self.result])  if view_type == 'cred' else  '\n'.join([view_type]+[','.join(i) if type(i) == list else i for i in self.result]) 
                 )
 
             if self.options.output_type == "json":
@@ -178,7 +177,7 @@ class ChiasmodonCLI(Chiasmodon):
             )
         
         if self.options.output and self.result:
-            self.save_result()
+            self.save_result(self.options.view_type)
             self.print(f'{self.T.MAGENTA}>{self.T.RESET}{self.T.YELLOW} Saved output to {self.T.RESET}: {self.T.GREEN}{self.options.output}{self.T.RESET}')
 
       

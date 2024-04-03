@@ -4,7 +4,7 @@ import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.32"
+VERSION = "0.2.33"
 
 class Chiasmodon:
     API_URL         = 'https://beta.chiasmodon.com/v2/api/beta'
@@ -131,7 +131,6 @@ class Chiasmodon:
             'domain-emails':'yes' if only_domain_emails else 'no',
             'get-info':'yes'
         }
-        
 
         if yaspin:
             with yaspin(Spinner(["🐟","🐠","🐡","🐬","🐋","🐳","🦈","🐙","🐚","🪼","🪸"], 200),text=f"Processing {query} ...") as sp:
@@ -332,14 +331,31 @@ class Result(dict):
         self[key] = value
         
     def save_format(self):
-        if (self.url and self.date ) or (self.app_id and self.date):
-            return [
-                self.url if self.url else self.app_id,
-                self.username if self.username else self.email,
-                self.password,
-                self.country,
-                self.date,
-            ]
+        if self.date:
+            # result count is 5 
+            result = []
+            # 1 
+            if self.url:
+                result.append(self.url)
+            elif self.app_id:
+                result.append(self.app_id)
+            else:
+                result.append('null')
+            
+            # 2
+            if self.username:
+                result.append(self.username)
+            elif self.email:
+                result.append(self.email)
+
+            # 3 
+            result.append(self.password)
+
+            # 4 
+            result.append(self.country)
+
+            # 5
+            result.append(self.date)
         
         else:
             for i in list(self.values()):
