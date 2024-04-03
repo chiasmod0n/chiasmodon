@@ -347,7 +347,8 @@ class Result(dict):
                 result.append(self.username)
             elif self.email:
                 result.append(self.email)
-
+            else:
+                result.append('null')
             # 3 
             result.append(self.password)
 
@@ -357,6 +358,8 @@ class Result(dict):
             # 5
             result.append(self.date)
         
+            return result
+            
         else:
             for i in list(self.values()):
                 if i != None:return i
