@@ -71,53 +71,31 @@ class ChiasmodonCLI(Chiasmodon):
 
     def review_results(self,
                        beta:Result, 
-                       view_type:str,
                        ys:yaspin,
                     ) -> None:
 
-        if view_type == list(self.VIEW_TYPE.keys())[0x0]:
-            if ':http' in (beta.url or  ''):return 
-
-            c = ''
-            if beta.app_id:
-                c+=f"{self.T.MAGENTA}> {self.T.YELLOW}App ID{self.T.RESET}: {self.T.CYAN}{beta.app_id}{self.T.RESET}\n"
-                if beta.app_name:c+=f"{self.T.MAGENTA}> {self.T.YELLOW}App name{self.T.RESET}: {self.T.CYAN}{beta.app_name}{self.T.RESET}\n"
-                
-            elif beta.url:c+=f"{self.T.MAGENTA}> {self.T.YELLOW}URL{self.T.RESET}: {self.T.CYAN}{beta.url}{self.T.RESET}\n"
-            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Username{self.T.RESET}: {self.T.GREEN}{beta.username}{self.T.RESET}\n" if beta.username else f"{self.T.MAGENTA}> {self.T.YELLOW}Email{self.T.RESET}: {self.T.GREEN}{beta.email}{self.T.RESET}\n"
-            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Password{self.T.RESET}: {self.T.GREEN}{beta.password}{self.T.RESET}\n"
-            if beta.country != 'Unknown':c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Country{self.T.RESET}: {self.T.CYAN}{beta.country}{self.T.RESET}\n"
-            c+=f"{self.T.MAGENTA}> {self.T.YELLOW}Date{self.T.RESET}: {self.T.BLUE}{beta.date}{self.T.RESET}"
-
-            self.print(c, ys)
-
-            self.result.append(beta.save_format())
-
-            self.print(f"{self.T.MAGENTA}+"*30 + self.T.RESET, ys)
-
-        
-        elif view_type in list(self.VIEW_TYPE.keys())[0x1:]:
-            if ':http' in  (beta.url or '') :return
-
-            if view_type in ['email','username', 'password']:
-                self.print(f"{self.T.MAGENTA}> " +self.T.GREEN+beta+self.T.RESET, ys)
-            if view_type in ['app', 'url']:
-                self.print(f"{self.T.MAGENTA}> " +self.T.CYAN+beta+self.T.RESET, ys)
-            if view_type in ['subdomain']:
-                self.print(f"{self.T.MAGENTA}> " +self.T.BLUE+beta+self.T.RESET, ys)
-
-            self.result.append(beta.save_format())
+        self.print(beta.print(), ys)
+        self.result.append(beta.save_format())
     
     def save_result(self, view_type) -> None:
 
         if self.options.output:
+
             if self.options.output_type == "text":
+                if self.result and view_type != 'cred':
+                    self.result = list(set(self.result))
+                    self.result.remove(None) if None in self.result else None
+                
                 ULIT.wFile(
                     self.options.output,
                     '\n'.join([':'.join(i) if type(i) == list else i for i in self.result]) 
                 )
 
             if self.options.output_type == "csv":
+                if self.result and view_type != 'cred':
+                    self.result = list(set(self.result))
+                    self.result.remove(None) if None in self.result else None
+                
                 ULIT.wFile(
                     self.options.output,
                     '\n'.join([','.join(['url/app_id','user/email', 'password', 'country', 'date'])]+[','.join(i) if type(i) == list else i for i in self.result])  if view_type == 'cred' else  '\n'.join([view_type]+[','.join(i) if type(i) == list else i for i in self.result]) 
@@ -161,6 +139,10 @@ class ChiasmodonCLI(Chiasmodon):
             query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.password)).is_file() else [self.options.password.strip()]
             method = 'password'
 
+        if self.options.endpoint:
+            query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.endpoint)).is_file() else [self.options.endpoint.strip()]
+            method = 'endpoint'
+            
         for i in query:
             self.search(
                 query=i,
@@ -175,7 +157,7 @@ class ChiasmodonCLI(Chiasmodon):
                 callback_view_result=self.review_results,
                 yaspin=yaspin,
             )
-        
+
         if self.options.output and self.result:
             self.save_result(self.options.view_type)
             self.print(f'{self.T.MAGENTA}>{self.T.RESET}{self.T.YELLOW} Saved output to {self.T.RESET}: {self.T.GREEN}{self.options.output}{self.T.RESET}')
@@ -206,6 +188,7 @@ if __name__ == "__main__":
     parser.add_argument('-e','--email',         help='Search by email, only pro, only pro account.',type=str)
     parser.add_argument('-u','--username',      help='Search by username, only pro account.',type=str)
     parser.add_argument('-p','--password',      help='Search by password, only pro account.',type=str)
+    parser.add_argument('-ep','--endpoint',     help='Search by url endpoint.',type=str)
 
     parser.add_argument('-C','--country',       help='sort result by country code default is all', type=str, default='all')
     parser.add_argument('-vt','--view-type',    help='type view the result default is "cred".', choices=Chiasmodon.VIEW_TYPE, type=str, default='cred')
@@ -218,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument('-de','--domain-emails',help='only result for company domain, this option work only with -d or --domain, default is False',action='store_true', default=False)
 
     parser.add_argument('-T','--timeout',       help='request timeout default is 60.',type=int, default=60)
-    parser.add_argument('-L','--limit',         help='limit results default is 10000.',type=int, default=100)
+    parser.add_argument('-L','--limit',         help='limit results default is 10000.',type=int, default=10000)
 
     parser.add_argument('-v','--version',         help='version.',action='store_true')
     #parser.add_argument('-D','--debug',         help='debug mode default is false.',action='store_true', default=False)
@@ -247,6 +230,9 @@ Examples:
     # Search for target password
     {Path(sys.argv[0]).name} --password example@123
 
+    # Search for target endpoint
+    {Path(sys.argv[0]).name} --endpoint /wp-login.php
+
     # Search for target cidr
     {Path(sys.argv[0]).name} --cidr x.x.x.x/24
 
@@ -271,7 +257,7 @@ Examples:
         print(VERSION)
         sys.exit(0)
 
-    if not args.domain and not args.email and not args.app  and not args.cidr and not args.asn and not args.init and not args.username and not args.password:
+    if not args.domain and not args.email and not args.app  and not args.cidr and not args.asn and not args.init and not args.username and not args.password and not args.endpoint:
         parser.print_help()
         sys.exit(0)
     

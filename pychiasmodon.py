@@ -4,19 +4,22 @@ import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "0.2.33"
+VERSION = "1.0.1"
 
 class Chiasmodon:
-    API_URL         = 'https://beta.chiasmodon.com/v2/api/beta'
+    API_URL         = 'https://chiasmodon.com/v2/api/beta'
     API_HEADERS     = {'user-agent':'cli/python'}
     VIEW_TYPE = {
-        'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password'],
-        'url':['domain', 'email', 'cidr', 'asn', 'username','password'],
+        'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password',  'endpoint',],
+        'url':['domain', 'email', 'cidr', 'asn', 'username','password', 'endpoint',],
         'subdomain':['domain'],
-        'email':['domain', 'cidr', 'asn', 'app' ],
-        'password':['domain', 'cidr', 'app', 'asn', 'email' 'username'],
-        'username': ['domain', 'cidr', 'app', 'asn', 'email','password'],
-        'app':['cidr', 'asn', 'email', 'username','password'],
+        'email':['domain', 'cidr', 'asn', 'app' ,'endpoint', 'phone', 'password'],
+        'password':['domain', 'cidr', 'app', 'asn', 'email' 'username', 'endpoint'],
+        'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint',],
+        'app':['cidr', 'asn', 'email', 'username','password','phone'],
+        #'phone':['domain','cidr', 'asn', 'email', 'username','password', 'endpoint'],
+        'endpoint':['domain','cidr', 'asn', 'email', 'username','password',],
+        'port':['domain','cidr', 'asn', 'email', 'username','password'],
     }
 
     METHODS= [
@@ -27,6 +30,8 @@ class Chiasmodon:
     'app',
     'username',
     'password',
+    'endpoint',
+    #'phone',
     ]
 
     class T:
@@ -69,6 +74,7 @@ class Chiasmodon:
         else:return '{}.{}'.format(x.domain, x.suffix)
 
     def print(self,text, ys=None, ys_err=False) -> None:
+        if text == None:return 
         if self.debug:
             if ys:
                 if not ys_err:
@@ -118,6 +124,8 @@ class Chiasmodon:
                     yaspin:bool,
                     ) -> dict:
         
+        Result.VIEW_TYPE = view_type
+
         result : list[Result] = []
 
         data = {
@@ -125,6 +133,7 @@ class Chiasmodon:
             'token':self.token,
             'type-view':view_type,
             'method' : 'search-by-%s' % method,
+            'version' : VERSION,
             'query' : query,
             'country' : country.upper(),
             'all':'yes' if all else 'no',
@@ -196,24 +205,21 @@ class Chiasmodon:
             
             for r in beta_result['data']:
                 
-                if r.__class__ == dict:
-                    column :Result = Result(**r)
-                else:
-                    column :Result = Result(**{view_type:r})
-
-                if len(result) == limit:
-                    if yaspin:YS.text='';YS.stop()
-                    return result
+                column :Result = Result(**r)
 
                 if sort and column in self.__result:
                     continue
                 
                 if callback_view_result:
-                    callback_view_result(beta=column, view_type=view_type, ys=YS)
+                    callback_view_result(beta=column, ys=YS)
 
                 result.append(column)
                 self.__result.append(column)
-
+              
+                if len(result) == limit:
+                    if yaspin:YS.text='';YS.stop()
+                    return result
+                
             if beta_result['done']:
                 if yaspin:YS.text='';YS.stop()
                 return result
@@ -279,35 +285,104 @@ class Chiasmodon:
         return result
 
 class Result(dict):
-    def __init__(self,
-                url=None,
-                password=None,
-                username=None,
-                app_name=None,
-                app_id=None,
-                subdomain=None,
-                country=None,
-                date=None,
-                ip=None,
-                email=None,
-                ) -> None:
+    VIEW_TYPE = None
+    T = Chiasmodon.T
 
-        self.url        = url 
-        self.password   = password 
-        self.username   = username 
-        self.app_name   = app_name 
-        self.app_id     = app_id 
-        self.country    = country 
-        self.subdomain  = subdomain
-        self.date       = date 
-        self.ip         = ip 
-        self.email      = email
-    
-    def __str__(self) -> str:
-        if (self.url and self.date ) or (self.app_id and self.date):
-            return super().__str__()
+    def __init__(self,type,**kwargs) -> None:
+        
+        self.kwargs         = kwargs
+        self.type           = type 
+
+        self.url            = None
+        self.urlPort        = None
+        self.urlEndpoint    = None
+        self.email          = None
+        self.username       = None
+        self.password       = None
+        self.country        = None
+        self.date           = None 
+        self.domain         = None 
+        self.phone          = None 
+        self.ip             = None 
+        self.asn            = None
+        self.appID          = None
+        self.appName        = None 
+        self.appDomain      = None 
+
+
+        if self.type == "login":
+            if kwargs.get('url'):
+                self.urlEndpoint = kwargs['url']['path']
+                self.urlPort = kwargs['url']['port']
+                self.url    = self.__convert_url(kwargs['url'])
+                
+                if kwargs['url']['ip']:
+                    self.ip     = kwargs['url']['ip']['ip']
+                    self.asn    = kwargs['url']['ip']['asn']
+
+                elif kwargs['url']['domain']:
+                    self.domain = self.__convert_domain(kwargs['url']['domain'])    
+                
+
+            if kwargs.get('app'):
+                self.appID   = kwargs['app']['id']
+                self.appName = kwargs['app']['name']
+                if kwargs['app']['domain']:
+                    self.appDomain = self.__convert_domain(kwargs['app']['domain'])
+            
+            if kwargs.get('cred'):
+                if kwargs['cred']['email']:
+                    self.email = self.__convert_email(kwargs['cred']['email'])
+
+                self.username = kwargs['cred']['username']
+                self.password = kwargs['cred']['password']
+
+            if kwargs.get('country'):
+                self.country = kwargs['country']['f']
+            
+            self.date = kwargs['date']
+
+
+        if self.type == 'url':
+            self.urlEndpoint = kwargs['path']
+            self.urlPort = kwargs['port']
+            self.url = self.__convert_url(kwargs)
+
+            if kwargs['ip']:
+                self.url    = self.__convert_url(kwargs)
+                self.ip     = kwargs['ip']['ip']
+                self.asn    = kwargs['ip']['asn']
+
+            elif kwargs['domain']:
+                self.domain = self.__convert_domain(kwargs['domain'])    
+
+        if self.type == "email":
+            self.email = self.__convert_email(kwargs)
+        
+        if self.type == "domain":
+            self.domain = self.__convert_domain(kwargs)
+
+    def __convert_email(self,email):
+        return f"{email['name']}@{self.__convert_domain(email['domain'])}"
+
+    def __convert_url(self,url:dict):
+        if url['domain']:
+            return f"{url['proto']}://{self.__convert_domain(url['domain'])}:{url['port']}{url['path']}" 
+        elif url['ip']:
+            return f"{url['proto']}://{url['ip']['ip']}:{url['port']}{url['path']}" 
+
+        
+        return None 
+
+    def __convert_domain(self,domain:dict):
+        if domain['sub']:
+            return f"{domain['sub']}.{domain['name']}.{domain['suffix']}"
         else:
-            return self.save_format()
+            return  f"{domain['name']}.{domain['suffix']}"
+
+
+    def __str__(self) -> str:
+        return self.save_format()
 
     def __radd__(self, other):
         if isinstance(other, str):
@@ -330,36 +405,108 @@ class Result(dict):
     def __setattr__(self, key, value):
         self[key] = value
         
+    
+    def print(self,):
+        if self.VIEW_TYPE == "endpoint" and self.urlEndpoint and self.urlEndpoint != '/':
+            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Endpoint{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.urlEndpoint}{self.T.RESET}"
+        
+        if self.VIEW_TYPE == "port" and self.urlPort:
+            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Port{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.urlPort}{self.T.RESET}"
+
+        if self.VIEW_TYPE == "email" and self.email:
+            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Email{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.email}{self.T.RESET}"
+        
+        if self.VIEW_TYPE == "app" and self.appID:
+            return f"{self.T.MAGENTA}[ {self.T.YELLOW}App ID{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.appID}{self.T.RESET}"
+        
+        if self.VIEW_TYPE == "url" and self.url:
+            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Url{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.url}{self.T.RESET}"
+        
+        if self.VIEW_TYPE == "subdomain" and self.domain:
+            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Domain{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.domain}{self.T.RESET}"
+        
+        #if self.VIEW_TYPE == "phone" and self.phone:
+        #    return f"{self.T.MAGENTA}> {self.T.CYAN}{self.domain}{self.T.RESET}"
+        
+
+        if self.VIEW_TYPE == "cred":
+            c= ""
+            if self.url:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}URL{self.T.MAGENTA}  ]{self.T.MAGENTA}>  {self.T.CYAN}{self.url}{self.T.RESET}\n"
+
+            if self.urlEndpoint and self.urlEndpoint != '/':c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}URL{self.T.MAGENTA}  ]{self.T.MAGENTA}> {self.T.RED} Path{self.T.RESET}{' ':10}: {self.T.CYAN}{self.urlEndpoint}{self.T.RESET}\n"
+
+            if self.urlPort and self.urlPort not in [80, 443]:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}URL{self.T.MAGENTA}  ]{self.T.MAGENTA}> {self.T.RED} Port{self.T.RESET}{' ':10}: {self.T.CYAN}{self.urlPort}{self.T.RESET}\n"
+            if self.asn:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}IP{self.T.MAGENTA}   ]{self.T.MAGENTA}> {self.T.RED} ASN{self.T.RESET}{' ':11}: {self.T.CYAN}{self.asn}{self.T.RESET}\n"
+            
+            if self.appID:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}APP{self.T.MAGENTA} ]{self.T.RED}{self.T.MAGENTA}>  {self.T.CYAN}{self.appID}{self.T.RESET}\n"
+            if self.appName:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}APP{self.T.MAGENTA} ]{self.T.RED}{self.T.MAGENTA}> {self.T.RED}Name{self.T.RESET}{' ':10}: {self.T.CYAN}{self.appName}{self.T.RESET}\n"
+            if self.appDomain:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}APP{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Domain{self.T.RESET}{' ':10}: {self.T.CYAN}{self.appDomain}{self.T.RESET}\n"
+            
+            if self.email:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Email{self.T.RESET}{' ':9}: {self.T.GREEN}{self.email}{self.T.RESET}\n"
+            if self.username and not self.email:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Username{self.T.RESET}{' ':6}: {self.T.GREEN}{self.username}{self.T.RESET}\n"
+            if self.password:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Password{self.T.RESET}{' ':6}: {self.T.GREEN}{self.password}{self.T.RESET}\n"
+            
+            if self.country:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}>{self.T.RED}  Country{self.T.RESET}{' ':7}: {self.T.BLUE}{self.country}{self.T.RESET}\n"
+            if self.date:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Date{self.T.RESET}{' ':10}: {self.T.BLUE}{self.date}{self.T.RESET}\n"
+
+            #c+=f"{self.T.MAGENTA}{'+'*30}{self.T.RESET}"
+            return c            
+
     def save_format(self):
-        if self.date:
-            # result count is 5 
-            result = []
+        result = []
+        if self.VIEW_TYPE == "cred":
             # 1 
             if self.url:
                 result.append(self.url)
-            elif self.app_id:
-                result.append(self.app_id)
+            elif self.appID:
+                result.append(self.appID)
             else:
-                result.append('null')
-            
+                result.append('')
+
             # 2
             if self.username:
                 result.append(self.username)
             elif self.email:
                 result.append(self.email)
             else:
-                result.append('null')
-            # 3 
-            result.append(self.password)
-
-            # 4 
-            result.append(self.country)
-
-            # 5
-            result.append(self.date)
-        
-            return result
+                result.append('')
             
+            # 3 
+            if self.password:
+                result.append(self.password)
+            else:
+                result.append('')
+            
+            # 4 
+            if self.country:
+                result.append(self.country)
+            else:
+                result.append('')
+            
+            # 5
+            if self.date:
+                result.append(self.date)
+            else:
+                result.append('')
+
+            return result
+
+        elif self.VIEW_TYPE == 'subdomain':
+            return self.domain
+        
+        elif self.VIEW_TYPE == 'email':
+            return self.email
+        
+        elif self.VIEW_TYPE == 'endpoint':
+            return self.urlEndpoint
+        
+        elif self.VIEW_TYPE == 'port':
+            return f"{self.urlPort}"
+        
+        elif self.VIEW_TYPE == 'app':
+            return self.appID
+        
+        elif self.VIEW_TYPE == 'url':
+            return self.url
         else:
-            for i in list(self.values()):
-                if i != None:return i
+            return 'null'
