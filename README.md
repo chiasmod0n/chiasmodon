@@ -74,8 +74,8 @@ options:
   -ot {text,json,csv}, --output-type {text,json,csv}
                         output format default is "text".
   --init INIT           set the api token.
-  -A, --all             view all result using "like",this option work only with (-d or --domain , -a or --app),default is False
-  -de, --domain-emails  only result for company domain, this option work only with -d or --domain, default is False
+  -A, --all             view all result using "like",this option work only with (-d or --domain),default is False
+  -de, --domain-emails  only result for company "root" domain, this option work only with (-d or --domain), default is False
   -T TIMEOUT, --timeout TIMEOUT
                         request timeout default is 60.
   -L LIMIT, --limit LIMIT
