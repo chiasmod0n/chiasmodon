@@ -197,8 +197,8 @@ if __name__ == "__main__":
     parser.add_argument('-ot','--output-type',  help='output format default is "text".', choices=['text', 'json', 'csv'], type=str, default='text')
     parser.add_argument('--init',               help='set the api token.',type=str)
 
-    parser.add_argument('-A','--all',           help='view all result using "like",this option work only with (-d or --domain , -a or --app),default is False', action='store_true', default=False)
-    parser.add_argument('-de','--domain-emails',help='only result for company domain, this option work only with -d or --domain, default is False',action='store_true', default=False)
+    parser.add_argument('-A','--all',           help='view all result using "like",this option work only with (-d or --domain),default is False', action='store_true', default=False)
+    parser.add_argument('-de','--domain-emails',help='only result for company "root" domain, this option work only with (-d or --domain), default is False',action='store_true', default=False)
 
     parser.add_argument('-T','--timeout',       help='request timeout default is 60.',type=int, default=60)
     parser.add_argument('-L','--limit',         help='limit results default is 10000.',type=int, default=10000)
