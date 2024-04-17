@@ -4,7 +4,7 @@ import requests
 import tldextract
 from yaspin import Spinner
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 class Chiasmodon:
     API_URL         = 'https://chiasmodon.com/v2/api/beta'
@@ -447,7 +447,7 @@ class Result(dict):
             if self.password:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Password{self.T.RESET}{' ':6}: {self.T.GREEN}{self.password}{self.T.RESET}\n"
             
             if self.country:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}>{self.T.RED}  Country{self.T.RESET}{' ':7}: {self.T.BLUE}{self.country}{self.T.RESET}\n"
-            if self.date:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Date{self.T.RESET}{' ':10}: {self.T.BLUE}{self.date}{self.T.RESET}\n"
+            #if self.date:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Date{self.T.RESET}{' ':10}: {self.T.BLUE}{self.date}{self.T.RESET}\n"
 
             #c+=f"{self.T.MAGENTA}{'+'*30}{self.T.RESET}"
             return c            
@@ -484,10 +484,10 @@ class Result(dict):
                 result.append('')
             
             # 5
-            if self.date:
-                result.append(self.date)
-            else:
-                result.append('')
+            #if self.date:
+            #    result.append(self.date)
+            #else:
+            #    result.append('')
 
             return result
 
