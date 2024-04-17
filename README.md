@@ -44,9 +44,9 @@ Chiasmodon provides a flexible and user-friendly command-line interface and pyth
 
 
 ```
-usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-s ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-C COUNTRY]
-                         [-vt {cred,url,subdomain,email,password,username,app}] [-o OUTPUT] [-ot {text,json,csv}] [--init INIT] [-A] [-de] [-T TIMEOUT] [-L LIMIT]
-                         [-v]
+usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-s ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-ep ENDPOINT] [-C COUNTRY]
+                         [-vt {cred,url,subdomain,email,password,username,app,endpoint,port}] [-o OUTPUT] [-ot {text,json,csv}] [--init INIT] [-A] [-de] [-T TIMEOUT]
+                         [-L LIMIT] [-v]
 
 Chiasmodon CLI
 
@@ -63,9 +63,11 @@ options:
                         Search by username, only pro account.
   -p PASSWORD, --password PASSWORD
                         Search by password, only pro account.
+  -ep ENDPOINT, --endpoint ENDPOINT
+                        Search by url endpoint.
   -C COUNTRY, --country COUNTRY
                         sort result by country code default is all
-  -vt {cred,url,subdomain,email,password,username,app}, --view-type {cred,url,subdomain,email,password,username,app}
+  -vt {cred,url,subdomain,email,password,username,app,endpoint,port}, --view-type {cred,url,subdomain,email,password,username,app,endpoint,port}
                         type view the result default is "cred".
   -o OUTPUT, --output OUTPUT
                         filename to save the result
@@ -102,6 +104,9 @@ Examples:
 
     # Search for target password
     chiasmodon_cli.py --password example@123
+
+    # Search for target endpoint
+    chiasmodon_cli.py --endpoint /wp-login.php
 
     # Search for target cidr
     chiasmodon_cli.py --cidr x.x.x.x/24
