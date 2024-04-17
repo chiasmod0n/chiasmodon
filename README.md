@@ -1,10 +1,12 @@
 
 # Chiasmodon
-[![PyPI version](https://badge.fury.io/py/chiasmodon.svg)](https://badge.fury.io/py/chiasmodon)
 
 [![asciicast](https://asciinema.org/a/W3jCmEetvRT6JjrBVDyKtSfbg.svg)](https://asciinema.org/a/W3jCmEetvRT6JjrBVDyKtSfbg)
-
+<p align="center">
+<img src="https://badge.fury.io/py/chiasmodon.svg" />
+</p>
 Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the process of gathering information about target domain. Its primary functionality revolves around searching for domain-related data, including domain emails, domain credentials (usernames and passwords), CIDRs (Classless Inter-Domain Routing), ASNs (Autonomous System Numbers), and subdomains. the tool allows users to search by domain, CIDR, ASN, email, username, password, or Google Play application ID. 
+
 
 
 
