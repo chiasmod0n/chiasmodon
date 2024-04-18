@@ -393,7 +393,7 @@ if __name__ == "__main__":
     parser.add_argument('-vt','--view-type',    help='type view the result default is "cred".', choices=VIEW_TYPE_LIST, type=str, default='cred')
     parser.add_argument('-ot','--output-type',  help='output format default is "text".', choices=['text', 'json', 'csv'], type=str, default='text')
     parser.add_argument('--init',               help='set the api token.',type=str)
-    parser.add_argument('-T','--timeout',       help='request timeout default is 60.',type=int, default=60)
+    parser.add_argument('-T','--timeout',       help='request timeout default is 360 sec.',type=int, default=360)
     parser.add_argument('-L','--limit',         help='limit results default is 10000.',type=int, default=10000)
 
     parser.add_argument('-v','--version',         help='version.',action='store_true')
