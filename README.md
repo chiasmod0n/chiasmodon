@@ -44,9 +44,9 @@ Chiasmodon provides a flexible and user-friendly command-line interface and pyth
 
 
 ```
-usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-s ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-ep ENDPOINT] [-C COUNTRY]
-                         [-vt {cred,url,subdomain,email,password,username,app,endpoint,port}] [-o OUTPUT] [-ot {text,json,csv}] [--init INIT] [-A] [-de] [-T TIMEOUT]
-                         [-L LIMIT] [-v]
+usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-n ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-ep ENDPOINT] [-s] [-sc SCAN_CLIENTS]
+                         [-se SCAN_EMPLOYEES] [-C COUNTRY] [-A] [-de] [-r] [-o OUTPUT] [-vt {cred,url,subdomain,email,password,username,app,endpoint,port}]
+                         [-ot {text,json,csv}] [--init INIT] [-T TIMEOUT] [-L LIMIT] [-v]
 
 Chiasmodon CLI
 
@@ -56,7 +56,7 @@ options:
                         Search by domain.
   -a APP, --app APP     Search by google play applciton id.
   -c CIDR, --cidr CIDR  Search by CIDR.
-  -s ASN, --asn ASN     Search by ASN.
+  -n ASN, --asn ASN     Search by ASN.
   -e EMAIL, --email EMAIL
                         Search by email, only pro, only pro account.
   -u USERNAME, --username USERNAME
@@ -65,17 +65,23 @@ options:
                         Search by password, only pro account.
   -ep ENDPOINT, --endpoint ENDPOINT
                         Search by url endpoint.
+  -s, --scan            scan the company domain (Related company, Clients, Employees, Company ASNs, Company Apps).
+  -sc SCAN_CLIENTS, --scan-clients SCAN_CLIENTS
+                        Run clients scan, default is yes, Ex: -sc no
+  -se SCAN_EMPLOYEES, --scan-employees SCAN_EMPLOYEES
+                        Run employees scan, default is yes, Ex: -se no
   -C COUNTRY, --country COUNTRY
                         sort result by country code default is all
-  -vt {cred,url,subdomain,email,password,username,app,endpoint,port}, --view-type {cred,url,subdomain,email,password,username,app,endpoint,port}
-                        type view the result default is "cred".
+  -A, --all             view all result using "like",this option work only with (-d or --domain),default is False
+  -de, --domain-emails  only result for company "root" domain, this option work only with (-d or --domain), default is False
+  -r, --related         Get related company domains,this option work only with (-d or --domain), default False
   -o OUTPUT, --output OUTPUT
                         filename to save the result
+  -vt {cred,url,subdomain,email,password,username,app,endpoint,port}, --view-type {cred,url,subdomain,email,password,username,app,endpoint,port}
+                        type view the result default is "cred".
   -ot {text,json,csv}, --output-type {text,json,csv}
                         output format default is "text".
   --init INIT           set the api token.
-  -A, --all             view all result using "like",this option work only with (-d or --domain),default is False
-  -de, --domain-emails  only result for company "root" domain, this option work only with (-d or --domain), default is False
   -T TIMEOUT, --timeout TIMEOUT
                         request timeout default is 60.
   -L LIMIT, --limit LIMIT
@@ -84,18 +90,24 @@ options:
 
 Examples:
 
-    # Search for target domain, you will see the result for only this "example.com"
-    chiasmodon_cli.py --domain example.com
+    # Scan company by domain
+    chiasmodon_cli.py --domain example.com --scan
 
+    # Search for target domain, you will see the result for only this "example.com" 
+    chiasmodon_cli.py --domain example.com 
+    
     # Search for target subdomains
-    chiasmodon_cli.py --domain example.com --all
+    chiasmodon_cli.py --domain example.com --all 
+    
+    # Search for target domain, you will see the result for only this "example.com" on United States 
+    chiasmodon_cli.py --domain example.com --country US 
 
-    # Search for target domain, you will see the result for only this "example.com" on United States
-    chiasmodon_cli.py --domain example.com --country US
+    # Search for related companies by domain
+    chiasmodon_cli.py --domain example.com --related
 
-    # search for target app id
-    chiasmodon_cli.py --app com.example
-
+    # search for target app id 
+    chiasmodon_cli.py --app com.example 
+    
     # Search for target asn
     chiasmodon_cli.py --asn AS123 --type-view cred
 
@@ -112,20 +124,20 @@ Examples:
     chiasmodon_cli.py --cidr x.x.x.x/24
 
     # Search for target creds by domain emsils
-    chiasmodon_cli.py --domain example.com --domain-emails
+    chiasmodon_cli.py --domain example.com --domain-emails 
     chiasmodon_cli.py --domain example.com --domain-emails --output example-creds.json --output-type json
     chiasmodon_cli.py --domain example.com --domain-emails --view-type email --output example-emails.txt --output-type text
-
+    
     # Search for target subdomain
     chiasmodon_cli.py --domain company.com --view-type subdomain
-
+    
     # Search for target email
-    chiasmodon_cli.py --email someone@example.com
-    chiasmodon_cli.py --email someone@example.com --view-type url
+    chiasmodon_cli.py --email someone@example.com  
+    chiasmodon_cli.py --email someone@example.com --view-type url 
 
-    # search for multiple targets:
-    chiasmodon_cli.py --domain targets.txt --output example-creds.txt
-    chiasmodon_cli.py --domain targets.txt --view-type url --output example-urls.txt
+    # search for multiple targets: 
+    chiasmodon_cli.py --domain targets.txt --output example-creds.txt 
+    chiasmodon_cli.py --domain targets.txt --view-type url --output example-urls.txt 
 ```
 
 ***How to use pychiasmodon library***:

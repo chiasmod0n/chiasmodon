@@ -2,27 +2,25 @@ import sys
 import time
 import requests
 import tldextract
-from yaspin import Spinner
+from yaspin import Spinner 
 
-VERSION = "1.1.3"
+VERSION = "1.1.7"
+_API_URL = 'https://chiasmodon.com/v2/api/beta'
+_API_HEADERS = {'user-agent':'cli/python'}
+_VIEW_TYPE = {
+    'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password',  'endpoint',],
+    'url':['domain', 'email', 'cidr', 'asn', 'username','password', 'endpoint',],
+    'subdomain':['domain'],
+    'email':['domain', 'cidr', 'asn', 'app' ,'endpoint', 'phone', 'password'],
+    'password':['domain', 'cidr', 'app', 'asn', 'email' 'username', 'endpoint'],
+    'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint',],
+    'app':['cidr', 'asn', 'email', 'username','password','phone'],
+    #'phone':['domain','cidr', 'asn', 'email', 'username','password', 'endpoint'],
+    'endpoint':['domain','cidr', 'asn', 'email', 'username','password',],
+    'port':['domain','cidr', 'asn', 'email', 'username','password'],
+}
 
-class Chiasmodon:
-    API_URL         = 'https://chiasmodon.com/v2/api/beta'
-    API_HEADERS     = {'user-agent':'cli/python'}
-    VIEW_TYPE = {
-        'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password',  'endpoint',],
-        'url':['domain', 'email', 'cidr', 'asn', 'username','password', 'endpoint',],
-        'subdomain':['domain'],
-        'email':['domain', 'cidr', 'asn', 'app' ,'endpoint', 'phone', 'password'],
-        'password':['domain', 'cidr', 'app', 'asn', 'email' 'username', 'endpoint'],
-        'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint',],
-        'app':['cidr', 'asn', 'email', 'username','password','phone'],
-        #'phone':['domain','cidr', 'asn', 'email', 'username','password', 'endpoint'],
-        'endpoint':['domain','cidr', 'asn', 'email', 'username','password',],
-        'port':['domain','cidr', 'asn', 'email', 'username','password'],
-    }
-
-    METHODS= [
+_METHODS = [
     'domain',
     'email',
     'asn',
@@ -32,16 +30,21 @@ class Chiasmodon:
     'password',
     'endpoint',
     #'phone',
-    ]
+]
 
-    class T:
-        RED      = '\033[91m'
-        GREEN    = '\033[92m'
-        YELLOW   = '\033[93m'
-        BLUE     = '\033[94m'
-        MAGENTA  = '\033[95m'
-        CYAN     = '\033[96m'
-        RESET    = '\033[0m'
+VIEW_TYPE_LIST = list(_VIEW_TYPE.keys())
+
+class T:
+    RED      = '\033[91m'
+    GREEN    = '\033[92m'
+    YELLOW   = '\033[93m'
+    BLUE     = '\033[94m'
+    MAGENTA  = '\033[95m'
+    CYAN     = '\033[96m'
+    RESET    = '\033[0m'
+
+
+class Chiasmodon:
     def __init__(self, token=None, color=True, debug=True,check_token=True) -> None:
 
         self.token = token
@@ -49,22 +52,23 @@ class Chiasmodon:
         self.err :bool   = False 
         self.msg :str    = '' 
         self.__result:list[Result] = []
+        self.scan_mode = False
         
         if not color:
-            self.T.RED      = ''
-            self.T.GREEN    = ''
-            self.T.YELLOW   = ''
-            self.T.BLUE     = ''
-            self.T.MAGENTA  = ''
-            self.T.CYAN     = ''
-            self.T.RESET    = ''
+            T.RED      = ''
+            T.GREEN    = ''
+            T.YELLOW   = ''
+            T.BLUE     = ''
+            T.MAGENTA  = ''
+            T.CYAN     = ''
+            T.RESET    = ''
         
         if self.token and check_token:
             if self.__check_token():
-                self.print(f'{self.T.GREEN}Set token successfully{self.T.RESET}')
+                self.print(f'{T.GREEN}Set token successfully{T.RESET}')
 
             else:
-                self.print(f'{self.T.RED}{self.msg}{self.T.RESET}')
+                self.print(f'{T.RED}{self.msg}{T.RESET}')
                 sys.exit()
     
     def filter_domain(self,d) -> str:
@@ -96,7 +100,7 @@ class Chiasmodon:
     def __request(self, data:dict,timeout=60):
 
         try:
-            resp = requests.post(self.API_URL, data=data, headers=self.API_HEADERS, timeout=timeout)
+            resp = requests.post(_API_URL, data=data, headers=_API_HEADERS, timeout=timeout)
             resp.close()
             resp = resp.json()
             try:
@@ -106,7 +110,7 @@ class Chiasmodon:
             except:pass
             return resp
         except Exception as e:
-            self.print(f"{self.T.RED}Request error: {e}\nPlease try agine later.{self.T.RESET}")
+            self.print(f"{T.RED}Request error: {e}\nPlease try agine later.{T.RESET}")
             sys.exit()
 
 
@@ -120,6 +124,7 @@ class Chiasmodon:
                     only_domain_emails:bool,
                     all:bool,
                     limit:int,
+                    related:bool,
                     callback_view_result:None,
                     yaspin:bool,
                     ) -> dict:
@@ -137,6 +142,7 @@ class Chiasmodon:
             'query' : query,
             'country' : country.upper(),
             'all':'yes' if all else 'no',
+            'related':'yes' if related else 'no',
             'domain-emails':'yes' if only_domain_emails else 'no',
             'get-info':'yes'
         }
@@ -149,14 +155,14 @@ class Chiasmodon:
                 )
 
             if process_info and process_info.get('count') == 0:
-                if method == 'domain' and not all and not only_domain_emails:
-                    self.print(f"{self.T.RED}Not found result\nTo view more result try: {self.T.BLUE}--all{self.T.RESET}", sp,ys_err=True)
+                if method == 'domain' and not all and not only_domain_emails and not self.scan_mode:
+                    self.print(f"{T.RED}Not found result\nTo view more result try: {T.BLUE}--all{T.RESET}", sp,ys_err=True)
 
-                elif method == 'domain' and all and not only_domain_emails:
-                    self.print(f"{self.T.RED}Not found result\nTo view more result for this target try: {self.T.BLUE}--domain-emails{self.T.RESET}", sp,ys_err=True)
+                elif method == 'domain' and all and not only_domain_emails  and not self.scan_mode:
+                    self.print(f"{T.RED}Not found result\nTo view more result for this target try: {T.BLUE}--domain-emails{T.RESET}", sp,ys_err=True)
                 
                 else:
-                    self.print(f"{self.T.RED}Not found result{self.T.RESET}", sp,ys_err=True)
+                    self.print(f"{T.RED}Not found result{T.RESET}", sp,ys_err=True)
 
                 sp.fail("💥 ")
                 sp.stop()
@@ -171,7 +177,7 @@ class Chiasmodon:
                 timeout=timeout,
             )
             if process_info and process_info.get('count') == 0:
-                self.print(f"{self.T.RED}Not found result{self.T.RESET}")
+                self.print(f"{T.RED}Not found result{T.RESET}")
                 return result
             
         
@@ -179,9 +185,9 @@ class Chiasmodon:
 
         if self.err:
             self.err= False
-            raise Exception(f'{self.T.RED}Error: {self.msg}{self.T.RESET}') 
-
-        self.print(f"{self.T.YELLOW}Result count{self.T.YELLOW}: {self.T.GREEN}{process_info['count']}{self.T.RESET}")
+            raise Exception(f'{T.RED}Error: {self.msg}{T.RESET}') 
+            
+        self.print(f"{T.YELLOW}Result count{T.YELLOW}: {T.GREEN}{process_info['count'] if process_info['count'] != -1 else 'unknown'}{T.RESET}")
 
         data['sid'] = process_info['sid']
 
@@ -204,7 +210,7 @@ class Chiasmodon:
 
             if self.err:
                 self.err=False
-                if yaspin:self.print(f"{self.T.RED}{self.msg}{self.T.RESET}", YS, ys_err=True);YS.fail("💥 ");YS.stop()
+                if yaspin:self.print(f"{T.RED}{self.msg}{T.RESET}", YS, ys_err=True);YS.fail("💥 ");YS.stop()
                 return result
             
             for r in beta_result['data']:
@@ -232,8 +238,8 @@ class Chiasmodon:
 
         if not result:
             
-            if yaspin:self.print(f"{self.T.RED}Not found result{self.T.RESET}", YS,ys_err=True);YS.fail("💥 ");YS.stop()
-            else:self.print(f"{self.T.RED}Not found result{self.T.RESET}")
+            if yaspin:self.print(f"{T.RED}Not found result{T.RESET}", YS,ys_err=True);YS.fail("💥 ");YS.stop()
+            else:self.print(f"{T.RED}Not found result{T.RESET}")
         else:
             if yaspin:YS.text='';YS.stop()
 
@@ -250,20 +256,21 @@ class Chiasmodon:
                timeout=60,
                sort=True,
                yaspin=False,
+               related=False,
                callback_view_result=None) -> dict:
         
         
-        if method not in self.METHODS:
-            raise Exception(f"{self.T.RED}not found this method: {method}.{self.T.RESET}")
+        if method not in _METHODS:
+            raise Exception(f"{T.RED}not found this method: {method}.{T.RESET}")
         
-        if method not in self.VIEW_TYPE[view_type]:
-            raise Exception(f"{self.T.RED}{view_type} doesn't support ({method}).{self.T.RESET}")
+        if method not in _VIEW_TYPE[view_type]:
+            raise Exception(f"{T.RED}{view_type} doesn't support ({method}).{T.RESET}")
 
         if only_domain_emails and method != 'domain':
-            raise Exception(f"{self.T.RED}domain emails support only (domain) method.{self.T.RESET}")
+            raise Exception(f"{T.RED}domain emails support only (domain) method.{T.RESET}")
         
         if all and method not in ['app', 'domain']:
-            raise Exception(f"{self.T.RED}all support only methods (app, domain).{self.T.RESET}")
+            raise Exception(f"{T.RED}all support only methods (app, domain).{T.RESET}")
         
         self.err = False
         self.msg = ''
@@ -274,12 +281,13 @@ class Chiasmodon:
             method=method,
             query=query,
             country=country,
-            view_type=view_type,
+            view_type=view_type if not related else 'subdomain',
             sort=sort,
             timeout=timeout,
             only_domain_emails=only_domain_emails,
             all=all,
             limit=limit,
+            related=related,
             callback_view_result=callback_view_result,
             yaspin=yaspin,
         )
@@ -290,12 +298,11 @@ class Chiasmodon:
 
 class Result(dict):
     VIEW_TYPE = None
-    T = Chiasmodon.T
 
     def __init__(self,type,**kwargs) -> None:
         
         self.kwargs         = kwargs
-        self.type           = type 
+        Type           = type 
 
         self.url            = None
         self.urlPort        = None
@@ -314,7 +321,7 @@ class Result(dict):
         self.appDomain      = None 
 
 
-        if self.type == "login":
+        if Type == "login":
             if kwargs.get('url'):
                 self.urlEndpoint = kwargs['url']['path']
                 self.urlPort = kwargs['url']['port']
@@ -347,7 +354,7 @@ class Result(dict):
             self.date = kwargs['date']
 
 
-        if self.type == 'url':
+        if Type == 'url':
             self.urlEndpoint = kwargs['path']
             self.urlPort = kwargs['port']
             self.url = self.__convert_url(kwargs)
@@ -360,10 +367,10 @@ class Result(dict):
             elif kwargs['domain']:
                 self.domain = self.__convert_domain(kwargs['domain'])    
 
-        if self.type == "email":
+        if Type == "email":
             self.email = self.__convert_email(kwargs)
         
-        if self.type == "domain":
+        if Type == "domain":
             self.domain = self.__convert_domain(kwargs)
 
     def __convert_email(self,email):
@@ -412,48 +419,48 @@ class Result(dict):
     
     def print(self,):
         if self.VIEW_TYPE == "endpoint" and self.urlEndpoint and self.urlEndpoint != '/':
-            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Endpoint{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.urlEndpoint}{self.T.RESET}"
+            return f"{T.MAGENTA}[ {T.YELLOW}Endpoint{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.urlEndpoint}{T.RESET}"
         
         if self.VIEW_TYPE == "port" and self.urlPort:
-            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Port{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.urlPort}{self.T.RESET}"
+            return f"{T.MAGENTA}[ {T.YELLOW}Port{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.urlPort}{T.RESET}"
 
         if self.VIEW_TYPE == "email" and self.email:
-            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Email{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.email}{self.T.RESET}"
+            return f"{T.MAGENTA}[ {T.YELLOW}Email{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.email}{T.RESET}"
         
         if self.VIEW_TYPE == "app" and self.appID:
-            return f"{self.T.MAGENTA}[ {self.T.YELLOW}App ID{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.appID}{self.T.RESET}"
+            return f"{T.MAGENTA}[ {T.YELLOW}App ID{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.appID}{T.RESET}"
         
         if self.VIEW_TYPE == "url" and self.url:
-            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Url{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.url}{self.T.RESET}"
+            return f"{T.MAGENTA}[ {T.YELLOW}Url{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.url}{T.RESET}"
         
         if self.VIEW_TYPE == "subdomain" and self.domain:
-            return f"{self.T.MAGENTA}[ {self.T.YELLOW}Domain{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.CYAN}{self.domain}{self.T.RESET}"
-        
+            return f"{T.MAGENTA}[ {T.YELLOW}Domain{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.domain}{T.RESET}"
+
         #if self.VIEW_TYPE == "phone" and self.phone:
-        #    return f"{self.T.MAGENTA}> {self.T.CYAN}{self.domain}{self.T.RESET}"
+        #    return f"{T.MAGENTA}> {T.CYAN}{self.domain}{T.RESET}"
         
 
         if self.VIEW_TYPE == "cred":
             c= ""
-            if self.url:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}URL{self.T.MAGENTA}  ]{self.T.MAGENTA}>  {self.T.CYAN}{self.url}{self.T.RESET}\n"
+            if self.url:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}>  {T.CYAN}{self.url}{T.RESET}\n"
 
-            if self.urlEndpoint and self.urlEndpoint != '/':c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}URL{self.T.MAGENTA}  ]{self.T.MAGENTA}> {self.T.RED} Path{self.T.RESET}{' ':10}: {self.T.CYAN}{self.urlEndpoint}{self.T.RESET}\n"
+            if self.urlEndpoint and self.urlEndpoint != '/':c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Path{T.RESET}{' ':10}: {T.CYAN}{self.urlEndpoint}{T.RESET}\n"
 
-            if self.urlPort and self.urlPort not in [80, 443]:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}URL{self.T.MAGENTA}  ]{self.T.MAGENTA}> {self.T.RED} Port{self.T.RESET}{' ':10}: {self.T.CYAN}{self.urlPort}{self.T.RESET}\n"
-            if self.asn:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}IP{self.T.MAGENTA}   ]{self.T.MAGENTA}> {self.T.RED} ASN{self.T.RESET}{' ':11}: {self.T.CYAN}{self.asn}{self.T.RESET}\n"
+            if self.urlPort and self.urlPort not in [80, 443]:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Port{T.RESET}{' ':10}: {T.CYAN}{self.urlPort}{T.RESET}\n"
+            if self.asn:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.MAGENTA}> {T.RED} ASN{T.RESET}{' ':11}: {T.CYAN}{self.asn}{T.RESET}\n"
             
-            if self.appID:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}APP{self.T.MAGENTA} ]{self.T.RED}{self.T.MAGENTA}>  {self.T.CYAN}{self.appID}{self.T.RESET}\n"
-            if self.appName:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}APP{self.T.MAGENTA} ]{self.T.RED}{self.T.MAGENTA}> {self.T.RED}Name{self.T.RESET}{' ':10}: {self.T.CYAN}{self.appName}{self.T.RESET}\n"
-            if self.appDomain:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}APP{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Domain{self.T.RESET}{' ':10}: {self.T.CYAN}{self.appDomain}{self.T.RESET}\n"
+            if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}>  {T.CYAN}{self.appID}{T.RESET}\n"
+            if self.appName:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED}Name{T.RESET}{' ':10}: {T.CYAN}{self.appName}{T.RESET}\n"
+            if self.appDomain:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Domain{T.RESET}{' ':10}: {T.CYAN}{self.appDomain}{T.RESET}\n"
             
-            if self.email:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Email{self.T.RESET}{' ':9}: {self.T.GREEN}{self.email}{self.T.RESET}\n"
-            if self.username and not self.email:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Username{self.T.RESET}{' ':6}: {self.T.GREEN}{self.username}{self.T.RESET}\n"
-            if self.password:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}CRED{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Password{self.T.RESET}{' ':6}: {self.T.GREEN}{self.password}{self.T.RESET}\n"
+            if self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Email{T.RESET}{' ':9}: {T.GREEN}{self.email}{T.RESET}\n"
+            if self.username and not self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Username{T.RESET}{' ':6}: {T.GREEN}{self.username}{T.RESET}\n"
+            if self.password:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Password{T.RESET}{' ':6}: {T.GREEN}{self.password}{T.RESET}\n"
             
-            if self.country:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}>{self.T.RED}  Country{self.T.RESET}{' ':7}: {self.T.BLUE}{self.country}{self.T.RESET}\n"
-            #if self.date:c+=f"{self.T.MAGENTA}[ {self.T.YELLOW}INFO{self.T.MAGENTA} ]{self.T.MAGENTA}> {self.T.RED} Date{self.T.RESET}{' ':10}: {self.T.BLUE}{self.date}{self.T.RESET}\n"
+            if self.country:c+=f"{T.MAGENTA}[ {T.YELLOW}INFO{T.MAGENTA} ]{T.MAGENTA}>{T.RED}  Country{T.RESET}{' ':7}: {T.BLUE}{self.country}{T.RESET}\n"
+            #if self.date:c+=f"{T.MAGENTA}[ {T.YELLOW}INFO{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Date{T.RESET}{' ':10}: {T.BLUE}{self.date}{T.RESET}\n"
 
-            #c+=f"{self.T.MAGENTA}{'+'*30}{self.T.RESET}"
+            #c+=f"{T.MAGENTA}{'+'*30}{T.RESET}"
             return c            
 
     def save_format(self):
