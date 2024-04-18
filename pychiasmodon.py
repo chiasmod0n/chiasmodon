@@ -4,7 +4,7 @@ import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "1.1.9"
+VERSION = "1.1.10"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -113,15 +113,15 @@ class Chiasmodon:
             return resp
 
         except requests.exceptions.ReadTimeout:
-            self.print(f"{T.RED}Error: timeout !\nPlease try agine later.{T.RESET}")
+            self.print(f"{T.RED}\nError: timeout !\nPlease try agine later.{T.RESET}")
             sys.exit()
 
         except requests.exceptions.InvalidJSONError:
-            self.print(f"{T.RED}Error: Server send wrong data.\nPlease try agine later.{T.RESET}")
+            self.print(f"{T.RED}\nError: Server send wrong data.\nPlease try agine later.{T.RESET}")
             sys.exit()
 
         except Exception as e:
-            self.print(f"{T.RED}Request error: {e}\nPlease try agine later.{T.RESET}")
+            self.print(f"{T.RED}\nRequest error: {e}\nPlease try agine later.{T.RESET}")
             sys.exit()
 
 
