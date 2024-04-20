@@ -4,7 +4,7 @@ import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "1.1.10"
+VERSION = "1.1.11"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -460,9 +460,9 @@ class Result(dict):
             if self.urlPort and self.urlPort not in [80, 443]:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Port{T.RESET}{' ':10}: {T.CYAN}{self.urlPort}{T.RESET}\n"
             if self.asn:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.MAGENTA}> {T.RED} ASN{T.RESET}{' ':11}: {T.CYAN}{self.asn}{T.RESET}\n"
             
-            if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}>  {T.CYAN}{self.appID}{T.RESET}\n"
-            if self.appName:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED}Name{T.RESET}{' ':10}: {T.CYAN}{self.appName}{T.RESET}\n"
-            if self.appDomain:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Domain{T.RESET}{' ':10}: {T.CYAN}{self.appDomain}{T.RESET}\n"
+            if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}>   {T.CYAN}{self.appID}{T.RESET}\n"
+            if self.appName:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED}  Name{T.RESET}{' ':10}: {T.CYAN}{self.appName}{T.RESET}\n"
+            if self.appDomain:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.MAGENTA}> {T.RED}  Domain{T.RESET}{' ':8}: {T.CYAN}{self.appDomain}{T.RESET}\n"
             
             if self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Email{T.RESET}{' ':9}: {T.GREEN}{self.email}{T.RESET}\n"
             if self.username and not self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Username{T.RESET}{' ':6}: {T.GREEN}{self.username}{T.RESET}\n"
