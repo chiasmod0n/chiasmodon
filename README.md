@@ -142,9 +142,8 @@ Examples:
 
 ***How to use pychiasmodon library***:
 ```python
-from pychiasmodon import Chiasmodon as ch 
-token = "PUT_HERE_YOUR_API_KEY"
-obj = ch(token)
+from pychiasmodon import Chiasmodon 
+ch = Chiasmodon()
 ```
 - **Search for target subdomains**:
     - *Command line*
@@ -153,7 +152,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('example.com',method='domain', all=True)
+        result = ch.search('example.com',method='domain', all=True)
         
         for i in result:
             print(i)
@@ -166,7 +165,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('example.com',method='domain')
+        result = ch.search('example.com',method='domain')
         
         for i in result:
             print(i)
@@ -179,7 +178,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('example.com',method='domain',country="US")
+        result = ch.search('example.com',method='domain',country="US")
         
         for i in result:
             print(i)
@@ -193,7 +192,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('com.example',method='app')
+        result = ch.search('com.example',method='app')
 
         for i in result:
             print(i)
@@ -206,7 +205,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('AS123',method='asn', view_type='cred')
+        result = ch.search('AS123',method='asn', view_type='cred')
 
         for i in result:
             print(i)
@@ -220,7 +219,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('someone',method='username')
+        result = ch.search('someone',method='username')
 
         for i in result:
             print(i)
@@ -234,7 +233,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('example@123',method='password')
+        result = ch.search('example@123',method='password')
 
         for i in result:
             print(i)
@@ -248,7 +247,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('x.x.x.x/24',method='cidr')
+        result = ch.search('x.x.x.x/24',method='cidr')
 
         for i in result:
             print(i)
@@ -262,7 +261,7 @@ obj = ch(token)
         ```
     - *Python*
         ```python
-        result = obj.search('example.com',method='domain', only_domain_emails=True)
+        result = ch.search('example.com',method='domain', only_domain_emails=True)
 
         for i in result:
             print(i)
