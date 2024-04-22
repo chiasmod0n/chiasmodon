@@ -1,10 +1,11 @@
 import sys
+
 import time
 import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "1.1.13"
+VERSION = "1.1.14"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -14,7 +15,7 @@ _VIEW_TYPE = {
     'email':['domain', 'cidr', 'asn', 'app' ,'endpoint', 'phone', 'password'],
     'password':['domain', 'cidr', 'app', 'asn', 'email' 'username', 'endpoint'],
     'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint',],
-    'app':['cidr', 'asn', 'email', 'username','password','phone'],
+    'app':['email', 'username','password','phone','domain'],
     #'phone':['domain','cidr', 'asn', 'email', 'username','password', 'endpoint'],
     'endpoint':['domain','cidr', 'asn', 'email', 'username','password',],
     'port':['domain','cidr', 'asn', 'email', 'username','password'],
@@ -69,7 +70,7 @@ class Chiasmodon:
 
             else:
                 self.print(f'{T.RED}{self.msg}{T.RESET}')
-                sys.exit()
+                return
     
     def filter_domain(self,d) -> str:
         domain = d.split()[0]
@@ -138,6 +139,7 @@ class Chiasmodon:
                     related:bool,
                     callback_view_result:None,
                     yaspin:bool,
+                    search_text=''
                     ) -> dict:
         
         Result.VIEW_TYPE = view_type
@@ -159,7 +161,7 @@ class Chiasmodon:
         }
 
         if yaspin:
-            with yaspin(Spinner(["🐟","🐠","🐡","🐬","🐋","🐳","🦈","🐙","🐚","🪼","🪸"], 200),text=f"Processing {query} ...") as sp:
+            with yaspin(Spinner(["🐟","🐠","🐡","🐬","🐋","🐳","🦈","🐙","🐚","🪼","🪸"], 200),text=f"Processing {query} ..." if not search_text else search_text) as sp:
                 process_info = self.__request(
                     data=data,
                     timeout=timeout,
@@ -196,7 +198,8 @@ class Chiasmodon:
 
         if self.err:
             self.err= False
-            raise Exception(f'{T.RED}Error: {self.msg}{T.RESET}') 
+            self.print(f'{T.RED}Error: {self.msg}{T.RESET}',ys_err=True) 
+            return
             
         self.print(f"{T.YELLOW}Result count{T.YELLOW}: {T.GREEN}{process_info['count'] if process_info['count'] != -1 else 'unknown'}{T.RESET}")
 
@@ -268,6 +271,7 @@ class Chiasmodon:
                sort=True,
                yaspin=False,
                related=False,
+               search_text='',
                callback_view_result=None) -> dict:
         
         
@@ -301,6 +305,7 @@ class Chiasmodon:
             related=related,
             callback_view_result=callback_view_result,
             yaspin=yaspin,
+            search_text=search_text
         )
 
         self.__result:list = []
@@ -329,6 +334,7 @@ class Result(dict):
         self.asn            = None
         self.appID          = None
         self.appName        = None 
+        self.appIcon        = None 
         self.appDomain      = None 
 
 
@@ -349,6 +355,7 @@ class Result(dict):
             if kwargs.get('app'):
                 self.appID   = kwargs['app']['id']
                 self.appName = kwargs['app']['name']
+                self.appIcon = kwargs['app']['icon']
                 if kwargs['app']['domain']:
                     self.appDomain = self.__convert_domain(kwargs['app']['domain'])
             
@@ -364,8 +371,7 @@ class Result(dict):
             
             self.date = kwargs['date']
 
-
-        if Type == 'url':
+        elif Type == 'url':
             self.urlEndpoint = kwargs['path']
             self.urlPort = kwargs['port']
             self.url = self.__convert_url(kwargs)
@@ -378,11 +384,20 @@ class Result(dict):
             elif kwargs['domain']:
                 self.domain = self.__convert_domain(kwargs['domain'])    
 
-        if Type == "email":
+        elif Type == "email":
             self.email = self.__convert_email(kwargs)
         
-        if Type == "domain":
+        elif Type == "domain":
             self.domain = self.__convert_domain(kwargs)
+
+        elif Type == 'app':
+            self.appID = kwargs['id']
+            self.appName = kwargs['name']
+            self.appIcon = kwargs['icon']
+
+            if kwargs['domain']:
+                self.domain = self.__convert_domain(kwargs['domain'])    
+
 
     def __convert_email(self,email):
         return f"{email['name']}@{self.__convert_domain(email['domain'])}"
@@ -401,6 +416,13 @@ class Result(dict):
             return f"{domain['sub']}.{domain['name']}.{domain['suffix']}"
         else:
             return  f"{domain['name']}.{domain['suffix']}"
+
+    def __convert_app(self,domain:dict):
+        if domain['sub']:
+            return f"{domain['sub']}.{domain['name']}.{domain['suffix']}"
+        else:
+            return  f"{domain['name']}.{domain['suffix']}"
+
 
 
     def __str__(self) -> str:
@@ -462,6 +484,7 @@ class Result(dict):
             
             if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}>  {T.CYAN}{self.appID}{T.RESET}\n"
             if self.appName:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}> {T.RED} Name{T.RESET}{' ':10}: {T.CYAN}{self.appName}{T.RESET}\n"
+            if self.appIcon:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}> {T.RED} Icon{T.RESET}{' ':10}: {T.CYAN}{self.appIcon}{T.RESET}\n"
             if self.appDomain:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Domain{T.RESET}{' ':8}: {T.CYAN}{self.appDomain}{T.RESET}\n"
             
             if self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Email{T.RESET}{' ':9}: {T.GREEN}{self.email}{T.RESET}\n"
@@ -527,7 +550,7 @@ class Result(dict):
         
         elif self.VIEW_TYPE == 'app':
             return self.appID
-        
+
         elif self.VIEW_TYPE == 'url':
             return self.url
         else:

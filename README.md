@@ -16,6 +16,14 @@ Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the
 - [x] **🎮Google Play Application**: Search for information related to a specific application on the Google Play Store by providing the application ID.
 - [x] **🔎CIDR and 🔢ASN**: Explore CIDR blocks and Autonomous System Numbers (ASNs) associated with the target domain to gain insights into network infrastructure and potential vulnerabilities.
 - [x] **✉️Email, 👤Username, 🔒Password**: Conduct searches based on email, username, or password to identify potential security risks or compromised credentials.
+- [x] **🔍Scan**: Perform a comprehensive scan on a given company domain name in one click, including finding
+  - Related companies.
+  - App applications.
+  - ASNs, CIDRs/Subnets.
+  - Client credentials (`Email, Username, Password`).
+  - Employee credentials (`Email, Username, Password`)
+  - Subdomains.
+  - URLs (`Domain/IP, Port, Endpoint`)
 - [X] **🌍Country**: Sort and filter search results by country to gain insights into the geographic distribution of the identified information.
 - [x] **📋Output Customization**: Choose the desired output format (text, JSON, or CSV) and specify the filename to save the search results.
 - [x] **⚙️Additional Options**: The tool offers various additional options, such as viewing different result types (credentials, URLs, subdomains, emails, passwords, usernames, or applications), setting API tokens, specifying timeouts, limiting results, and more.
@@ -44,9 +52,9 @@ Chiasmodon provides a flexible and user-friendly command-line interface and pyth
 
 
 ```
-usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-n ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-ep ENDPOINT] [-s] [-sc SCAN_CLIENTS]
-                         [-se SCAN_EMPLOYEES] [-C COUNTRY] [-A] [-de] [-r] [-o OUTPUT] [-vt {cred,url,subdomain,email,password,username,app,endpoint,port}]
-                         [-ot {text,json,csv}] [--init INIT] [-T TIMEOUT] [-L LIMIT] [-v]
+usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-n ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-ep ENDPOINT] [-C COUNTRY] [-A] [-de] [-r] [-s] [-sr SCAN_RELATED]
+                         [-sa SCAN_APPS] [-sc SCAN_CLIENTS] [-se SCAN_EMPLOYEES] [-o OUTPUT] [-vt {cred,url,subdomain,email,password,username,app,endpoint,port}] [-ot {text,json,csv}]
+                         [--init INIT] [-T TIMEOUT] [-L LIMIT] [-v]
 
 Chiasmodon CLI
 
@@ -55,8 +63,8 @@ options:
   -d DOMAIN, --domain DOMAIN
                         Search by domain.
   -a APP, --app APP     Search by google play applciton id.
-  -c CIDR, --cidr CIDR  Search by CIDR.
-  -n ASN, --asn ASN     Search by ASN.
+  -c CIDR, --cidr CIDR  Search by cidr or ip address.
+  -n ASN, --asn ASN     Search by asn.
   -e EMAIL, --email EMAIL
                         Search by email, only pro, only pro account.
   -u USERNAME, --username USERNAME
@@ -65,16 +73,20 @@ options:
                         Search by password, only pro account.
   -ep ENDPOINT, --endpoint ENDPOINT
                         Search by url endpoint.
-  -s, --scan            scan the company domain (Related company, Clients, Employees, Company ASNs, Company Apps).
-  -sc SCAN_CLIENTS, --scan-clients SCAN_CLIENTS
-                        Run clients scan, default is yes, Ex: -sc no
-  -se SCAN_EMPLOYEES, --scan-employees SCAN_EMPLOYEES
-                        Run employees scan, default is yes, Ex: -se no
   -C COUNTRY, --country COUNTRY
                         sort result by country code default is all
   -A, --all             view all result using "like",this option work only with (-d or --domain),default is False
   -de, --domain-emails  only result for company "root" domain, this option work only with (-d or --domain), default is False
   -r, --related         Get related company domains,this option work only with (-d or --domain), default False
+  -s, --scan            scan the company domain (Related company, Clients, Employees, Company ASNs,Company CIDRs/Subnets, Company Apps).
+  -sr SCAN_RELATED, --scan-related SCAN_RELATED
+                        Run related scan, default is yes, Ex: -sr no
+  -sa SCAN_APPS, --scan-apps SCAN_APPS
+                        Run App scan, default is yes, Ex: -sa no
+  -sc SCAN_CLIENTS, --scan-clients SCAN_CLIENTS
+                        Run clients scan, default is yes, Ex: -sc no
+  -se SCAN_EMPLOYEES, --scan-employees SCAN_EMPLOYEES
+                        Run employees scan, default is yes, Ex: -se no
   -o OUTPUT, --output OUTPUT
                         filename to save the result
   -vt {cred,url,subdomain,email,password,username,app,endpoint,port}, --view-type {cred,url,subdomain,email,password,username,app,endpoint,port}
@@ -83,7 +95,7 @@ options:
                         output format default is "text".
   --init INIT           set the api token.
   -T TIMEOUT, --timeout TIMEOUT
-                        request timeout default is 60.
+                        request timeout default is 360 sec.
   -L LIMIT, --limit LIMIT
                         limit results default is 10000.
   -v, --version         version.
@@ -271,7 +283,7 @@ ch = Chiasmodon()
     | Methods | View Type   |
     |-----------------|-----------------|
     | --domain, --email, --cidr, --app, --asn, --username, --password | --view-type cred        |
-    | --cidr, --asn, --email, --username, --password        | --view-type app |       
+    | --domain, --email, --username, --password       | --view-type app |       
     | --domain, --email, --cidr, --asn, --username, --password | --view-type url      
     | --domain                                      |--view-type subdomain |
     | --domain, --cidr, --asn, --app                      |--view-type email     | 

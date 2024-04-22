@@ -105,6 +105,9 @@ class Scan(Chiasmodon):
 
         output = {
             'related':[],
+            'apps':[], 
+            # 'asns':[], # "soon"
+            # 'cidrs':[], # "soon"
             'client-creds':[],
             'client-usernames':[],
             'client-passwords':[],
@@ -117,35 +120,60 @@ class Scan(Chiasmodon):
             'urls':[],
             'endpoints':[],
             'ports':[],
-            # 'company-apps':[], # "soon"
-            # 'company-asns':[], # "soon"
 
         }
         
-        self.print(f"\nFind related companies for {T.GREEN+domain+T.RESET}",ys=False)
-        related = self.search(
-            method='domain',
-            query=domain,
-            country=self.options.country,
-            view_type='subdomain',
-            sort=True ,
-            timeout=self.options.timeout,
-            only_domain_emails=False,
-            all=False,
-            limit=1000000,
-            callback_view_result=self.scan_callback,
-            yaspin=yaspin,
-            related=True,
-        )
+        if self.options.scan_related.lower() == 'yes':
+            related = self.search(
+                method='domain',
+                query=domain,
+                country=self.options.country,
+                view_type='subdomain',
+                sort=True ,
+                timeout=self.options.timeout,
+                only_domain_emails=False,
+                all=False,
+                limit=1000000,
+                callback_view_result=self.scan_callback,
+                yaspin=yaspin,
+                related=True,
+                search_text=f'Find {T.GREEN+domain+T.RESET} related companies...'
+            )
 
-        output['related'] = [i.save_format() for i in related]
+            output['related'] = [i.save_format() for i in related]
 
-        if related:
-            ULIT.wFile((self.output_folder / 'related.txt'), '\n'.join(output['related'])) 
-            print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'related.txt')}{T.RESET}\n"
+            if related:
+                ULIT.wFile((self.output_folder / 'related.txt'), '\n'.join(output['related'])) 
+                print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'related.txt')}{T.RESET}\n"
+            else:
+                self.print(f'{T.RED}Not found related{T.RESET}', ys_err=True)
+            
+        if self.options.scan_apps.lower() == 'yes':
+            apps = self.search(
+                method='domain',
+                query=domain,
+                country=self.options.country,
+                view_type='app',
+                sort=True ,
+                timeout=self.options.timeout,
+                only_domain_emails=False,
+                all=False,
+                limit=1000000,
+                callback_view_result=self.scan_callback,
+                yaspin=yaspin,
+                related=False,
+                search_text=f'Find {T.GREEN+domain+T.RESET} Apps...'
+            )
 
+            output['apps'] = [i.save_format() for i in apps]
+
+            if apps:
+                ULIT.wFile((self.output_folder / 'apps.txt'), '\n'.join(output['apps'])) 
+                print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'apps.txt')}{T.RESET}\n"
+            else:
+                self.print(f'{T.RED}Not found apps{T.RESET}', ys_err=True)
+                
         if self.options.scan_clients.lower() == 'yes':
-            self.print(f"\nFind client creds in {T.GREEN+'*.'+domain+T.RESET}")
             client_creds:list[Result] = self.search(
                 method='domain',
                 query=domain,
@@ -157,7 +185,9 @@ class Scan(Chiasmodon):
                 all=True,
                 limit=1000000,
                 callback_view_result=self.scan_callback,
-                yaspin=yaspin
+                yaspin=yaspin,
+                search_text=f'Find {T.GREEN+domain+T.RESET} client creds...'
+                
             )
             output['client-creds'] =[i.save_format() for i in client_creds]
         
@@ -191,7 +221,6 @@ class Scan(Chiasmodon):
 
 
         if self.options.scan_employees.lower() == 'yes':
-            self.print(f"\nFind employees creds for {T.GREEN+domain+T.RESET}")
             employe_creds = self.search(
                 method='domain',
                 query=domain,
@@ -203,7 +232,8 @@ class Scan(Chiasmodon):
                 all=False,
                 limit=1000000,
                 callback_view_result=self.scan_callback,
-                yaspin=yaspin
+                yaspin=yaspin,
+                search_text=f'Find {T.GREEN+domain+T.RESET} employees creds...'
             )
             output['employe-creds'] =[i.save_format() for i in employe_creds]
 
@@ -381,14 +411,16 @@ if __name__ == "__main__":
     parser.add_argument('-u','--username',      help='Search by username, only pro account.',type=str)
     parser.add_argument('-p','--password',      help='Search by password, only pro account.',type=str)
     parser.add_argument('-ep','--endpoint',     help='Search by url endpoint.',type=str)    
-    parser.add_argument('-s','--scan',          help='scan the company domain (Related company, Clients, Employees, Company ASNs, Company Apps).',action='store_true', default=False)
-    parser.add_argument('-sc','--scan-clients', help='Run clients scan, default is yes, Ex: -sc no',type=str, default='yes')
-    parser.add_argument('-se','--scan-employees',help='Run employees scan, default is yes, Ex: -se no',type=str, default='yes')
-    #parser.add_argument('-fs','--full-scan',    help='',action='store_true', default=False) # "soon" 
     parser.add_argument('-C','--country',       help='sort result by country code default is all', type=str, default='all')
     parser.add_argument('-A','--all',           help='view all result using "like",this option work only with (-d or --domain),default is False', action='store_true', default=False)
     parser.add_argument('-de','--domain-emails',help='only result for company "root" domain, this option work only with (-d or --domain), default is False',action='store_true', default=False)
     parser.add_argument('-r','--related',       help='Get related company domains,this option work only with (-d or --domain), default False',action='store_true', default=False)
+    parser.add_argument('-s','--scan',          help='scan the company domain (Related company, Clients, Employees, Company ASNs, Company Apps).',action='store_true', default=False)
+    parser.add_argument('-sr','--scan-related',  help='Run related scan, default is yes, Ex: -sr no',type=str, default='yes')
+    parser.add_argument('-sa','--scan-apps',    help='Run App scan, default is yes, Ex: -sa no',type=str, default='yes')
+    parser.add_argument('-sc','--scan-clients', help='Run clients scan, default is yes, Ex: -sc no',type=str, default='yes')
+    parser.add_argument('-se','--scan-employees',help='Run employees scan, default is yes, Ex: -se no',type=str, default='yes')
+    #parser.add_argument('-fs','--full-scan',    help='',action='store_true', default=False) # "soon" 
     parser.add_argument('-o','--output',        help='filename to save the result', type=str,)
     parser.add_argument('-vt','--view-type',    help='type view the result default is "cred".', choices=VIEW_TYPE_LIST, type=str, default='cred')
     parser.add_argument('-ot','--output-type',  help='output format default is "text".', choices=['text', 'json', 'csv'], type=str, default='text')
