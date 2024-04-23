@@ -5,19 +5,19 @@ import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "1.1.14"
+VERSION = "1.1.15"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
-    'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password',  'endpoint',],
-    'url':['domain', 'email', 'cidr', 'asn', 'username','password', 'endpoint',],
+    'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password',  'endpoint'],
+    'url':['domain', 'email', 'cidr', 'asn', 'username','password', 'endpoint'],
     'subdomain':['domain'],
     'email':['domain', 'cidr', 'asn', 'app' ,'endpoint', 'phone', 'password'],
     'password':['domain', 'cidr', 'app', 'asn', 'email' 'username', 'endpoint'],
-    'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint',],
+    'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint'],
     'app':['email', 'username','password','phone','domain'],
     #'phone':['domain','cidr', 'asn', 'email', 'username','password', 'endpoint'],
-    'endpoint':['domain','cidr', 'asn', 'email', 'username','password',],
+    'endpoint':['domain','cidr', 'asn', 'email', 'username','password'],
     'port':['domain','cidr', 'asn', 'email', 'username','password'],
 }
 
@@ -168,10 +168,10 @@ class Chiasmodon:
                 )
 
             if process_info and process_info.get('count') == 0:
-                if method == 'domain' and not all and not only_domain_emails and not self.scan_mode:
+                if method == 'domain' and view_type not in ['app','subdomain'] and not all and not only_domain_emails and not self.scan_mode:
                     self.print(f"{T.RED}Not found result\nTo view more result try: {T.BLUE}--all{T.RESET}", sp,ys_err=True)
 
-                elif method == 'domain' and all and not only_domain_emails  and not self.scan_mode:
+                elif method == 'domain' and view_type not in ['app','subdomain'] and all and not only_domain_emails  and not self.scan_mode:
                     self.print(f"{T.RED}Not found result\nTo view more result for this target try: {T.BLUE}--domain-emails{T.RESET}", sp,ys_err=True)
                 
                 else:
@@ -416,13 +416,6 @@ class Result(dict):
             return f"{domain['sub']}.{domain['name']}.{domain['suffix']}"
         else:
             return  f"{domain['name']}.{domain['suffix']}"
-
-    def __convert_app(self,domain:dict):
-        if domain['sub']:
-            return f"{domain['sub']}.{domain['name']}.{domain['suffix']}"
-        else:
-            return  f"{domain['name']}.{domain['suffix']}"
-
 
 
     def __str__(self) -> str:

@@ -318,5 +318,6 @@ Chiasmodon is the result of collaborative efforts from a dedicated team of contr
 - [🐦 X/Twitter](https://x.com/chiasmod0n)
 
 
-[![star time](https://starchart.cc/chiasmod0n/chiasmodon.svg?variant=adaptive)](https://starchart.cc/chiasmod0n/chiasmodon)
+## Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=chiasmod0n/chiasmodon&type=Date)](https://star-history.com/#chiasmod0n/chiasmodon&Date)
