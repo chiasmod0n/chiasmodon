@@ -318,7 +318,7 @@ Chiasmodon is the result of collaborative efforts from a dedicated team of contr
 - [🐦 X/Twitter](https://x.com/chiasmod0n)
 
 
-## Star History
+## ⭐️Star History
 
 <a href="https://star-history.com/#chiasmod0n/chiasmodon&Date">
  <picture>

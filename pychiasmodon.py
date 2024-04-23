@@ -5,7 +5,7 @@ import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "1.1.16"
+VERSION = "1.1.17"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
