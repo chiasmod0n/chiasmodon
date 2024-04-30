@@ -16,5 +16,5 @@ setup(name='chiasmodon',
       url='https://github.com/chiasmod0n/chiasmodon',
       packages=['.'],
       scripts=['cli/chiasmodon_cli.py'],
-      install_requires=['requests', 'yaspin', 'tldextract']
-     ) 
+      install_requires=['requests', 'yaspin', 'tldextract','argcomplete']
+    ) 

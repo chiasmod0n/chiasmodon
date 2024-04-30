@@ -1,36 +1,242 @@
+import os 
 import sys
-
 import time
 import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "1.1.17"
+VERSION = "2.0.0"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
-    'cred':['domain', 'email', 'cidr', 'app', 'asn', 'username','password',  'endpoint'],
-    'url':['domain', 'email', 'cidr', 'asn', 'username','password', 'endpoint'],
-    'subdomain':['domain'],
-    'email':['domain', 'cidr', 'asn', 'app' ,'endpoint', 'phone', 'password'],
-    'password':['domain', 'cidr', 'app', 'asn', 'email' 'username', 'endpoint'],
-    'username': ['domain', 'cidr', 'app', 'asn', 'email','password','endpoint'],
-    'app':['email', 'username','password','phone','domain'],
-    #'phone':['domain','cidr', 'asn', 'email', 'username','password', 'endpoint'],
-    'endpoint':['domain','cidr', 'asn', 'email', 'username','password'],
-    'port':['domain','cidr', 'asn', 'email', 'username','password'],
+    'full':[
+        'cred.username',
+        'cred.phone',
+        'cred.password',
+        'cred.email',
+        'cred.email.domain',
+        'cred.country',
+        'domain',
+        'domain.all',
+        
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+    ],
+    'cred':[
+        'cred.phone',
+        'cred.username',
+        'cred.password',
+        'cred.email',
+        'cred.email.domain',
+        'cred.country',
+        'domain',
+        'domain.all',
+        
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+    ],
+    'url':[
+        'cred.username',
+        'cred.password',
+        'cred.phone',
+        'cred.email',
+        'cred.email.domain',
+        'cred.country',
+        'domain',
+        'domain.all',
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'url.path',
+        'url.port',
+    ],
+    'email':[
+        'cred.username',
+        'cred.phone',
+        'cred.password',
+        'cred.country',
+        'cred.email.domain',
+        'domain',
+        'domain.all',
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+    ],
+    'phone':[
+        'cred.username',
+        'cred.email',
+        'cred.email.domain',
+        'domain',
+        'domain.all',
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+        'cred.country',
+    ],    
+    'password':[
+        'cred.username',
+        'cred.phone',
+
+        'cred.email',
+        'cred.email.domain',
+        'domain',
+        'domain.all',
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+        'cred.country',
+    ],
+    'username': [
+        'cred.phone',
+        'cred.password',
+        'domain',
+        'domain.all',
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+        'cred.country',
+    ],
+    'app':[
+        'cred.phone',
+        'cred.username',
+        'cred.password',
+        'cred.email',
+        'cred.email.domain',
+        'cred.country', 
+        'app.domain'
+    ],
+    'domain':[
+        'cred.username',
+        'cred.phone',
+        'cred.password',
+        'cred.email',
+        'cred.email.domain',
+        'cred.country',
+        'domain',
+        'domain.all',
+        
+        'ip',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+    ],
+    'ip':[
+        'cred.username',
+        'cred.phone',
+        'cred.password',
+        'cred.email',
+        'cred.email.domain',
+        'domain',
+        'domain.all',
+        'ip.asn',
+        'ip.isp',
+        'ip.org',
+        'ip.port',
+        'ip.country',
+        'app.id',
+        'app.name',
+        'app.domain',
+        'url.path',
+        'url.port',
+        'cred.country',
+    ],
+    'related':[
+        'domain',
+    ],
+    'subdomain':[
+        'domain'
+    ]
 }
 
 _METHODS = [
-    'domain',
-    'email',
-    'asn',
-    'cidr',
-    'app',
-    'username',
-    'password',
-    'endpoint',
-    #'phone',
+    # cred
+    'cred.username',         # Query like -> somone
+    'cred.password',         # Query like -> lol@123
+    'cred.email',            # Query like -> somone@example.com
+    'cred.phone',            # Query line -> xxxxxxxx # without : + or - or  space or ) or (
+    'cred.email.domain',     # Query like -> example.com
+    'cred.country',          # Query like -> US 
+
+    # domain
+    'domain',           # Query like -> example.com
+    'domain.all',       # Query like -> example.com
+
+    # ip
+    'ip',               # Query like -> 1.1.1.1
+    'ip.asn',           # Query like -> as123
+    'ip.isp',           # Query like -> "isp company"
+    'ip.org',           # Query like -> "org name"
+    'ip.port',          # Query like -> 22
+    'ip.country',       # Query like -> US
+    
+    # app
+    'app.id',           # Query like -> com.example
+    'app.name',         # Query like -> Example
+    'app.domain',       # Query like -> example.com
+    
+    # url
+    'url.path',         # Query like -> "isp company"
+    'url.port',         # Query like -> 8080
 ]
 
 VIEW_TYPE_LIST = list(_VIEW_TYPE.keys())
@@ -46,14 +252,14 @@ class T:
 
 
 class Chiasmodon:
-    def __init__(self, token=None, color=True, debug=True,check_token=True) -> None:
-
-        self.token = token
-        self.debug = debug
-        self.err :bool   = False 
-        self.msg :str    = '' 
+    def __init__(self, token=None, color=True, debug=True,conf_file=None,check_token=True) -> None:
+        self.token                 = token
+        self.conf_file             = conf_file
+        self.debug                 = debug
+        self.err :bool             = False 
+        self.msg :str              = '' 
         self.__result:list[Result] = []
-        self.scan_mode = False
+        self.scan_mode             = False
         
         if not color:
             T.RED      = ''
@@ -69,6 +275,9 @@ class Chiasmodon:
                 self.print(f'{T.GREEN}Set token successfully{T.RESET}')
 
             else:
+                try:os.remove(conf_file)
+                except:pass
+
                 self.print(f'{T.RED}{self.msg}{T.RESET}')
                 return
     
@@ -91,8 +300,9 @@ class Chiasmodon:
 
     def __check_token(self):
         if self.__request({
-            'token':    self.token,
-            'method':   'check-token'
+            'token'     : self.token,
+            'version'   : VERSION,
+            'method'    : 'token'
         }).get('is_active'):
             return True 
 
@@ -130,16 +340,13 @@ class Chiasmodon:
                     method:str, 
                     query:str, 
                     view_type:str, 
-                    country:str,
                     timeout:int,
                     sort:bool, 
-                    only_domain_emails:bool,
-                    all:bool,
                     limit:int,
-                    related:bool,
-                    callback_view_result:None,
                     yaspin:bool,
-                    search_text=''
+                    callback_view_result,
+                    search_text='',
+                    err_text=''
                     ) -> dict:
         
         Result.VIEW_TYPE = view_type
@@ -148,16 +355,12 @@ class Chiasmodon:
 
         data = {
 
-            'token':self.token,
-            'type-view':view_type,
-            'method' : 'search-by-%s' % method,
-            'version' : VERSION,
-            'query' : query,
-            'country' : country.upper(),
-            'all':'yes' if all else 'no',
-            'related':'yes' if related else 'no',
-            'domain-emails':'yes' if only_domain_emails else 'no',
-            'get-info':'yes'
+            'token'         :       self.token,
+            'type-view'     :       view_type,
+            'method'        :       method,
+            'version'       :       VERSION,
+            'query'         :       query,
+            'get-info'      :       'yes'
         }
 
         if yaspin:
@@ -168,14 +371,18 @@ class Chiasmodon:
                 )
 
             if process_info and process_info.get('count') == 0:
-                if method == 'domain' and view_type not in ['app','subdomain'] and not all and not only_domain_emails and not self.scan_mode:
-                    self.print(f"{T.RED}Not found result\nTo view more result try: {T.BLUE}--all{T.RESET}", sp,ys_err=True)
+                if method == 'domain' and view_type not in ['app','subdomain'] and not self.scan_mode:
+                    self.print(f"{T.RED}Not found result\nTo view more result try: {T.BLUE}--method domain.all{T.RESET}", sp,ys_err=True)
 
-                elif method == 'domain' and view_type not in ['app','subdomain'] and all and not only_domain_emails  and not self.scan_mode:
-                    self.print(f"{T.RED}Not found result\nTo view more result for this target try: {T.BLUE}--domain-emails{T.RESET}", sp,ys_err=True)
+                elif method == 'domain.all' and view_type not in ['app','subdomain'] and not self.scan_mode:
+                    self.print(f"{T.RED}Not found result\nTo view more result for this target try: {T.BLUE}--method cred.email.domain{T.RESET}", sp,ys_err=True)
                 
                 else:
-                    self.print(f"{T.RED}Not found result{T.RESET}", sp,ys_err=True)
+                    if not err_text:
+                        self.print(f"{T.RED}Not found result{T.RESET}", sp,ys_err=True)
+                    else:
+                        self.print(f"{T.RED}{err_text}{T.RESET}", sp,ys_err=True)
+                        
 
                 sp.fail("💥 ")
                 sp.stop()
@@ -201,7 +408,7 @@ class Chiasmodon:
             self.print(f'{T.RED}Error: {self.msg}{T.RESET}',ys_err=True) 
             return
             
-        self.print(f"{T.YELLOW}Result count{T.YELLOW}: {T.GREEN}{process_info['count'] if process_info['count'] != -1 else 'unknown'}{T.RESET}")
+        self.print(f"{T.YELLOW}Pages count{T.YELLOW}: {T.GREEN}{process_info['pages'] if process_info['count'] != -1 else 'unknown'}{T.RESET}")
 
         data['sid'] = process_info['sid']
 
@@ -262,16 +469,13 @@ class Chiasmodon:
     def search(self,
                query,
                method='domain',
-               country='all',
-               view_type='cred',
+               view_type='full',
                limit=10000,
-               all=False,
-               only_domain_emails=False,
                timeout=60,
                sort=True,
                yaspin=False,
-               related=False,
                search_text='',
+               err_text='',
                callback_view_result=None) -> dict:
         
         
@@ -281,31 +485,22 @@ class Chiasmodon:
         if method not in _VIEW_TYPE[view_type]:
             raise Exception(f"{T.RED}{view_type} doesn't support ({method}).{T.RESET}")
 
-        if only_domain_emails and method != 'domain':
-            raise Exception(f"{T.RED}domain emails support only (domain) method.{T.RESET}")
-        
-        if all and method not in ['app', 'domain']:
-            raise Exception(f"{T.RED}all support only methods (app, domain).{T.RESET}")
-        
         self.err = False
         self.msg = ''
 
         if method == 'domain':query = self.filter_domain(query)
 
         result = self.__proc_query(
-            method=method,
             query=query,
-            country=country,
-            view_type=view_type if not related else 'subdomain',
+            method=method,
+            view_type=view_type,
             sort=sort,
             timeout=timeout,
-            only_domain_emails=only_domain_emails,
-            all=all,
             limit=limit,
-            related=related,
             callback_view_result=callback_view_result,
             yaspin=yaspin,
-            search_text=search_text
+            search_text=search_text,
+            err_text=err_text,
         )
 
         self.__result:list = []
@@ -322,31 +517,33 @@ class Result(dict):
 
         self.url            = None
         self.urlPort        = None
-        self.urlEndpoint    = None
-        self.email          = None
-        self.username       = None
-        self.password       = None
-        self.country        = None
-        self.date           = None 
+        self.urlPath        = None
+        self.credEmail      = None
+        self.credUsername   = None
+        self.credPassword   = None
+        self.credCountry    = None
+        self.credDate       = None 
+        self.credPhone      = None 
         self.domain         = None 
-        self.phone          = None 
         self.ip             = None 
-        self.asn            = None
+        self.ipAsn          = None
+        self.ipIsp          = None
+        self.ipOrg          = None
+        self.ipPorts        = None
+        self.ipCountry      = None
         self.appID          = None
         self.appName        = None 
         self.appIcon        = None 
         self.appDomain      = None 
 
-
         if Type == "login":
             if kwargs.get('url'):
-                self.urlEndpoint = kwargs['url']['path']
+                self.urlPath = kwargs['url']['path']
                 self.urlPort = kwargs['url']['port']
                 self.url    = self.__convert_url(kwargs['url'])
                 
                 if kwargs['url']['ip']:
-                    self.ip     = kwargs['url']['ip']['ip']
-                    self.asn    = kwargs['url']['ip']['asn']
+                    self.__convert_and_set_ip(kwargs['url']['ip'])
 
                 elif kwargs['url']['domain']:
                     self.domain = self.__convert_domain(kwargs['url']['domain'])    
@@ -358,34 +555,36 @@ class Result(dict):
                 self.appIcon = kwargs['app']['icon']
                 if kwargs['app']['domain']:
                     self.appDomain = self.__convert_domain(kwargs['app']['domain'])
-            
+
             if kwargs.get('cred'):
                 if kwargs['cred']['email']:
-                    self.email = self.__convert_email(kwargs['cred']['email'])
+                    self.credEmail = self.__convert_email(kwargs['cred']['email'])
 
-                self.username = kwargs['cred']['username']
-                self.password = kwargs['cred']['password']
+                self.credUsername = kwargs['cred']['username']
+                self.credPassword = kwargs['cred']['password'] 
+                if kwargs['cred']['phone']:
+                    self.credPhone = self.__convert_phone(kwargs['cred']['phone'])
+
 
             if kwargs.get('country'):
-                self.country = kwargs['country']['f']
+                self.credCountry = kwargs['country']['f']
             
-            self.date = kwargs['date']
+            self.credDate = kwargs['date']
 
         elif Type == 'url':
-            self.urlEndpoint = kwargs['path']
+            self.urlPath = kwargs['path']
             self.urlPort = kwargs['port']
             self.url = self.__convert_url(kwargs)
 
             if kwargs['ip']:
                 self.url    = self.__convert_url(kwargs)
-                self.ip     = kwargs['ip']['ip']
-                self.asn    = kwargs['ip']['asn']
+                self.__convert_and_set_ip(kwargs['ip'])
 
             elif kwargs['domain']:
                 self.domain = self.__convert_domain(kwargs['domain'])    
 
         elif Type == "email":
-            self.email = self.__convert_email(kwargs)
+            self.credEmail = self.__convert_email(kwargs)
         
         elif Type == "domain":
             self.domain = self.__convert_domain(kwargs)
@@ -399,8 +598,22 @@ class Result(dict):
                 self.domain = self.__convert_domain(kwargs['domain'])    
 
 
+        elif Type == 'ip':
+            self.__convert_and_set_ip(kwargs)
+    
+    def __convert_phone(self,phone):
+        return f"+{phone['country']['p']} {phone['number']}"
+
     def __convert_email(self,email):
         return f"{email['name']}@{self.__convert_domain(email['domain'])}"
+
+    def __convert_and_set_ip(self,ip):
+        self.ip         = ip['ip']
+        self.ipAsn      = ip['asn']
+        self.ipOrg      = ip['org']
+        self.ipIsp      = ip['isp']
+        self.ipPorts    = ip['ports']
+        self.ipCountry  = ip['country']['f'] if ip['country'] else None
 
     def __convert_url(self,url:dict):
         if url['domain']:
@@ -444,55 +657,82 @@ class Result(dict):
         
     
     def print(self,):
-        if self.VIEW_TYPE == "endpoint" and self.urlEndpoint and self.urlEndpoint != '/':
-            return f"{T.MAGENTA}[ {T.YELLOW}Endpoint{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.urlEndpoint}{T.RESET}"
+        if self.credPassword:
+            self.credPassword= self.credPassword[0:2] + len(self.credPassword[2::]) * '*'
         
-        if self.VIEW_TYPE == "port" and self.urlPort:
-            return f"{T.MAGENTA}[ {T.YELLOW}Port{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.urlPort}{T.RESET}"
+        c=""
+        
 
-        if self.VIEW_TYPE == "email" and self.email:
-            return f"{T.MAGENTA}[ {T.YELLOW}Email{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.email}{T.RESET}"
+        if self.VIEW_TYPE == "email" and self.credEmail:
+            c+=f"{T.MAGENTA}[ {T.YELLOW}Email{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.credEmail}{T.RESET}"
+
+        if self.VIEW_TYPE == "password" and self.credPassword:
+            c+=f"{T.MAGENTA}[ {T.YELLOW}Email{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.credPassword}{T.RESET}"
+
+        if self.VIEW_TYPE == "username" and self.credUsername:
+            c+=f"{T.MAGENTA}[ {T.YELLOW}Email{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.credUsername}{T.RESET}"
         
         if self.VIEW_TYPE == "app" and self.appID:
-            return f"{T.MAGENTA}[ {T.YELLOW}App ID{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.appID}{T.RESET}"
-        
+            if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}>  {T.CYAN}{self.appID}{T.RESET}\n"
+            if self.appName:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED} Name{T.RESET}{' ':10}: {T.CYAN}{self.appName}{T.RESET}\n"
+            if self.appIcon:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED} Icon{T.RESET}{' ':10}: {T.CYAN}{self.appIcon}{T.RESET}\n"
+            if self.appDomain:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Domain{T.RESET}{' ':8}: {T.CYAN}{self.appDomain}{T.RESET}\n"
+            
         if self.VIEW_TYPE == "url" and self.url:
-            return f"{T.MAGENTA}[ {T.YELLOW}Url{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.url}{T.RESET}"
-        
-        if self.VIEW_TYPE == "subdomain" and self.domain:
-            return f"{T.MAGENTA}[ {T.YELLOW}Domain{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.domain}{T.RESET}"
+            if self.url:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}>  {T.CYAN}{self.url}{T.RESET}\n"
+            if self.urlPath:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Path{T.RESET}{' ':10}: {T.CYAN}{self.urlPath}{T.RESET}\n"
+            if self.urlPort:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Port{T.RESET}{' ':10}: {T.CYAN}{self.urlPort}{T.RESET}\n"
 
-        #if self.VIEW_TYPE == "phone" and self.phone:
-        #    return f"{T.MAGENTA}> {T.CYAN}{self.domain}{T.RESET}"
-        
+        if self.VIEW_TYPE == "ip" and self.ip:
+            if self.ip:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA} ]{T.MAGENTA}>  {T.BLUE}{self.ip}{T.RESET}\n"
+            if self.ipPorts:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED} Ports{T.RESET}{' ':9}: {T.CYAN}{self.ipPorts}{T.RESET}\n"
+            if self.ipAsn:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED} Asn{T.RESET}{' ':11}: {T.CYAN}{self.ipAsn}{T.RESET}\n"
+            if self.ipIsp:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED} Isp{T.RESET}{' ':11}: {T.CYAN}{self.ipIsp}{T.RESET}\n"
+            if self.ipOrg:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA} ]{T.RED}{T.MAGENTA}> {T.RED} Org{T.RESET}{' ':11}: {T.CYAN}{self.ipOrg}{T.RESET}\n"
+            if self.ipCountry:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA} ]{T.MAGENTA}>{T.RED}  Country{T.RESET}{' ':7}: {T.CYAN}{self.ipCountry}{T.RESET}\n"
+
+        if self.VIEW_TYPE in ["domain", 'subdomain', 'related'] and self.domain:
+            c+=f"{T.MAGENTA}[ {T.YELLOW}Domain{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.domain}{T.RESET}"
+
+        if self.VIEW_TYPE == "phone" and self.credPhone:
+            return f"{T.MAGENTA}> {T.CYAN}{self.credPhone}{T.RESET}"
 
         if self.VIEW_TYPE == "cred":
-            c= ""
-            if self.url:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}>  {T.CYAN}{self.url}{T.RESET}\n"
+            if self.url:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}>  {T.BLUE}{self.url}{T.RESET}\n"
+            if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}>  {T.CYAN}{self.appID}{T.RESET}\n"
+            if self.credEmail:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Email{T.RESET}{' ':9}: {T.GREEN}{self.credEmail}{T.RESET}\n"
+            if self.credUsername and not self.credEmail:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Username{T.RESET}{' ':6}: {T.GREEN}{self.credUsername}{T.RESET}\n"
+            if self.credPassword:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Password{T.RESET}{' ':6}: {T.GREEN}{self.credPassword}{T.RESET}\n"
+            if self.credPhone:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Phone{T.RESET}{' ':9}: {T.GREEN}{self.credPhone}{T.RESET}\n"
+            if self.credCountry:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}>{T.RED}  Country{T.RESET}{' ':7}: {T.CYAN}{self.credCountry}{T.RESET}\n"
 
-            if self.urlEndpoint and self.urlEndpoint != '/':c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Path{T.RESET}{' ':10}: {T.CYAN}{self.urlEndpoint}{T.RESET}\n"
-
+        if self.VIEW_TYPE == "full":
+            if self.url:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}>  {T.BLUE}{self.url}{T.RESET}\n"
+            if self.urlPath and self.urlPath != '/':c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Path{T.RESET}{' ':10}: {T.CYAN}{self.urlPath}{T.RESET}\n"
             if self.urlPort and self.urlPort not in [80, 443]:c+=f"{T.MAGENTA}[ {T.YELLOW}URL{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Port{T.RESET}{' ':10}: {T.CYAN}{self.urlPort}{T.RESET}\n"
-            if self.asn:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.MAGENTA}> {T.RED} ASN{T.RESET}{' ':11}: {T.CYAN}{self.asn}{T.RESET}\n"
+            if self.ip:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.MAGENTA}>  {T.BLUE}{self.ip}{T.RESET}\n"
+            if self.ipPorts:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.RED}{T.MAGENTA}> {T.RED} Ports{T.RESET}{' ':9}: {T.CYAN}{self.ipPorts}{T.RESET}\n"
+            if self.ipAsn:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.RED}{T.MAGENTA}> {T.RED} Asn{T.RESET}{' ':11}: {T.CYAN}{self.ipAsn}{T.RESET}\n"
+            if self.ipIsp:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.RED}{T.MAGENTA}> {T.RED} Isp{T.RESET}{' ':11}: {T.CYAN}{self.ipIsp}{T.RESET}\n"
+            if self.ipOrg:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.RED}{T.MAGENTA}> {T.RED} Org{T.RESET}{' ':11}: {T.CYAN}{self.ipOrg}{T.RESET}\n"
+            if self.ipCountry:c+=f"{T.MAGENTA}[ {T.YELLOW}IP{T.MAGENTA}   ]{T.MAGENTA}>{T.RED}  Country{T.RESET}{' ':7}: {T.CYAN}{self.ipCountry}{T.RESET}\n"
             
             if self.appID:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}>  {T.CYAN}{self.appID}{T.RESET}\n"
             if self.appName:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}> {T.RED} Name{T.RESET}{' ':10}: {T.CYAN}{self.appName}{T.RESET}\n"
             if self.appIcon:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.RED}{T.MAGENTA}> {T.RED} Icon{T.RESET}{' ':10}: {T.CYAN}{self.appIcon}{T.RESET}\n"
             if self.appDomain:c+=f"{T.MAGENTA}[ {T.YELLOW}APP{T.MAGENTA}  ]{T.MAGENTA}> {T.RED} Domain{T.RESET}{' ':8}: {T.CYAN}{self.appDomain}{T.RESET}\n"
             
-            if self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Email{T.RESET}{' ':9}: {T.GREEN}{self.email}{T.RESET}\n"
-            if self.username and not self.email:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Username{T.RESET}{' ':6}: {T.GREEN}{self.username}{T.RESET}\n"
-            if self.password:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Password{T.RESET}{' ':6}: {T.GREEN}{self.password}{T.RESET}\n"
-            
-            if self.country:c+=f"{T.MAGENTA}[ {T.YELLOW}INFO{T.MAGENTA} ]{T.MAGENTA}>{T.RED}  Country{T.RESET}{' ':7}: {T.BLUE}{self.country}{T.RESET}\n"
-            #if self.date:c+=f"{T.MAGENTA}[ {T.YELLOW}INFO{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Date{T.RESET}{' ':10}: {T.BLUE}{self.date}{T.RESET}\n"
+            if self.credEmail:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Email{T.RESET}{' ':9}: {T.GREEN}{self.credEmail}{T.RESET}\n"
+            if self.credUsername and not self.credEmail:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Username{T.RESET}{' ':6}: {T.GREEN}{self.credUsername}{T.RESET}\n"
+            if self.credPassword:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Password{T.RESET}{' ':6}: {T.GREEN}{self.credPassword}{T.RESET}\n"
+            if self.credPhone:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}> {T.RED} Phone{T.RESET}{' ':9}: {T.GREEN}{self.credPhone}{T.RESET}\n"
+            if self.credCountry:c+=f"{T.MAGENTA}[ {T.YELLOW}CRED{T.MAGENTA} ]{T.MAGENTA}>{T.RED}  Country{T.RESET}{' ':7}: {T.CYAN}{self.credCountry}{T.RESET}\n"
 
-            #c+=f"{T.MAGENTA}{'+'*30}{T.RESET}"
-            return c            
+        return c            
 
     def save_format(self):
         result = []
-        if self.VIEW_TYPE == "cred":
+        if self.VIEW_TYPE in ['cred', 'full']:
             # 1 
             if self.url:
                 result.append(self.url)
@@ -502,44 +742,50 @@ class Result(dict):
                 result.append('')
 
             # 2
-            if self.username:
-                result.append(self.username)
-            elif self.email:
-                result.append(self.email)
+            if self.credUsername:
+                result.append(self.credUsername)
+            elif self.credEmail:
+                result.append(self.credEmail)
             else:
                 result.append('')
             
             # 3 
-            if self.password:
-                result.append(self.password)
+            if self.credPassword:
+                result.append(self.credPassword)
             else:
                 result.append('')
             
             # 4 
-            if self.country:
-                result.append(self.country)
+            if self.credCountry:
+                result.append(self.credCountry)
             else:
                 result.append('')
             
             # 5
-            #if self.date:
-            #    result.append(self.date)
+            #if self.credDate:
+            #    result.append(self.credDate)
             #else:
             #    result.append('')
 
             return result
 
-        elif self.VIEW_TYPE == 'subdomain':
+        elif self.VIEW_TYPE in ['subdomain', 'related', 'domain']:
             return self.domain
         
         elif self.VIEW_TYPE == 'email':
-            return self.email
+            return self.credEmail
+        elif self.VIEW_TYPE == 'phone':
+            return self.credPhone
+
+        elif self.VIEW_TYPE == 'username':
+            return self.credUsername
         
-        elif self.VIEW_TYPE == 'endpoint':
-            return self.urlEndpoint
+        elif self.VIEW_TYPE == 'password':
+            return self.credPassword
         
-        elif self.VIEW_TYPE == 'port':
-            return f"{self.urlPort}"
+        
+        elif self.VIEW_TYPE == 'ip':
+            return self.ip
         
         elif self.VIEW_TYPE == 'app':
             return self.appID

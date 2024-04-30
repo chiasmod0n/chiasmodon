@@ -1,36 +1,40 @@
 
 # Chiasmodon
 
-[![asciicast](https://asciinema.org/a/W3jCmEetvRT6JjrBVDyKtSfbg.svg)](https://asciinema.org/a/W3jCmEetvRT6JjrBVDyKtSfbg)
+[![asciicast](https://asciinema.org/a/QrEtBLFMQrjU1sjRjcgTdo41m.svg)](https://asciinema.org/a/QrEtBLFMQrjU1sjRjcgTdo41m)
 <p align="center">
 <img src="https://badge.fury.io/py/chiasmodon.svg" />
 </p>
-Chiasmodon is an OSINT (Open Source Intelligence) tool designed to assist in the process of gathering information about target domain. Its primary functionality revolves around searching for domain-related data, including domain emails, domain credentials (usernames and passwords), CIDRs (Classless Inter-Domain Routing), ASNs (Autonomous System Numbers), and subdomains. the tool allows users to search by domain, CIDR, ASN, email, username, password, or Google Play application ID. 
-
-
+Chiasmodon is an OSINT tool that allows users to gather information from various sources and conduct targeted searches based on domains, Google Play applications, email addresses, IP addresses, organizations, URLs, and more. It provides comprehensive scanning capabilities, customizable output formats, and additional options for enhanced data analysis and customization.
 
 
 ## ✨Features
 
 - [x] **🌐Domain**: Conduct targeted searches by specifying a domain name to gather relevant information related to the domain.
 - [x] **🎮Google Play Application**: Search for information related to a specific application on the Google Play Store by providing the application ID.
-- [x] **🔎CIDR and 🔢ASN**: Explore CIDR blocks and Autonomous System Numbers (ASNs) associated with the target domain to gain insights into network infrastructure and potential vulnerabilities.
 - [x] **✉️Email, 👤Username, 🔒Password**: Conduct searches based on email, username, or password to identify potential security risks or compromised credentials.
+- [x] **🔍 IP Address**: Perform searches using an IP address to gather information such as geolocation, associated domain names, and historical data.
+- [x] **🌍 CIDR**: Search for information related to a specified CIDR (Classless Inter-Domain Routing) block, including IP range details and associated networks.
+- [x] **🔢 ASN**: Retrieve information about an Autonomous System Number (ASN), including its owner, associated IP ranges, and network details.
+- [x] **🔌 Port**: Search for information about a specific port number, including its common usage, associated services, and potential vulnerabilities.
+- [x] **🌐 ISP**: Conduct searches based on an Internet Service Provider (ISP) name to gather information about the ISP, its services, and associated IP ranges.
+- [x] **🏢 Organization (ORG)**: Search for information related to a specific organization or company, including its contact details, associated domains, and network infrastructure.
+- [x] **🔗 URL Path**: Perform searches based on a specific URL path to gather information about the path, its content, and potential security risks.
+- [x] **📞 Phone**: Conduct searches using a phone number to gather information such as the associated owner, location, and any available public records.
 - [x] **🔍Scan**: Perform a comprehensive scan on a given company domain name in one click, including finding
   - Related companies.
   - App applications.
-  - ASNs, CIDRs/Subnets.
+  - Ips (`Port, Org, Isp, Asn`).
+  - Subdomains.
   - Client credentials (`Email, Username, Password`).
   - Employee credentials (`Email, Username, Password`)
-  - Subdomains.
   - URLs (`Domain/IP, Port, Endpoint`)
+
 - [X] **🌍Country**: Sort and filter search results by country to gain insights into the geographic distribution of the identified information.
 - [x] **📋Output Customization**: Choose the desired output format (text, JSON, or CSV) and specify the filename to save the search results.
 - [x] **⚙️Additional Options**: The tool offers various additional options, such as viewing different result types (credentials, URLs, subdomains, emails, passwords, usernames, or applications), setting API tokens, specifying timeouts, limiting results, and more.
 
 ## 🚀Comming soon
-
-- **📱Phone**: Get ready to uncover even more valuable data by searching for information associated with phone numbers. Whether you're investigating a particular individual or looking for connections between phone numbers and other entities, this new feature will provide you with valuable insights.
 
 - **🏢Company Name**: We understand the importance of comprehensive company research. In our upcoming release, you'll be able to search by company name and access a wide range of documents associated with that company. This feature will provide you with a convenient and efficient way to gather crucial information, such as legal documents, financial reports, and other relevant records.
 
@@ -45,250 +49,120 @@ Join us today and unlock the potential of our cutting-edge OSINT tool. Contact h
 
 ## ⬇️Install
 ```bash
-pip install chiasmodon
+$ pip install chiasmodon
+```
+Only for linux 👇 
+```bash
+$ activate-global-python-argcomplete
 ```
 ## 💻Usage
 Chiasmodon provides a flexible and user-friendly command-line interface and python library. Here are some examples to demonstrate its usage:
 
 
 ```
-usage: chiasmodon_cli.py [-h] [-d DOMAIN] [-a APP] [-c CIDR] [-n ASN] [-e EMAIL] [-u USERNAME] [-p PASSWORD] [-ep ENDPOINT] [-C COUNTRY] [-A] [-de] [-r] [-s] [-sr SCAN_RELATED]
-                         [-sa SCAN_APPS] [-sc SCAN_CLIENTS] [-se SCAN_EMPLOYEES] [-o OUTPUT] [-vt {cred,url,subdomain,email,password,username,app,endpoint,port}] [-ot {text,json,csv}]
-                         [--init INIT] [-T TIMEOUT] [-L LIMIT] [-v]
+usage: chiasmodon_cli.py [-h]
+                         [-m {cred.username,cred.password,cred.email,cred.phone,cred.email.domain,cred.country,domain,domain.all,ip,ip.asn,ip.isp,ip.org,ip.port,ip.country,app.id,app.name,app.domain,url.path,url.port}]
+                         [-vt {full,cred,url,email,phone,password,username,app,domain,ip,related,subdomain}] [-s] [-sr SCAN_RELATED]
+                         [-ss SCAN_SUBDOMAINS] [-sa SCAN_APPS] [-si SCAN_IPS] [-sc SCAN_CLIENTS] [-se SCAN_EMPLOYEES] [-o OUTPUT]
+                         [-ot {text,json,csv}] [-t TIMEOUT] [-l LIMIT] [-nc] [-lv] [-lm] [--init INIT] [-v]
+                         query
 
 Chiasmodon CLI
 
+positional arguments:
+  query                 query argument
+
 options:
   -h, --help            show this help message and exit
-  -d DOMAIN, --domain DOMAIN
-                        Search by domain.
-  -a APP, --app APP     Search by google play applciton id.
-  -c CIDR, --cidr CIDR  Search by cidr or ip address.
-  -n ASN, --asn ASN     Search by asn.
-  -e EMAIL, --email EMAIL
-                        Search by email, only pro, only pro account.
-  -u USERNAME, --username USERNAME
-                        Search by username, only pro account.
-  -p PASSWORD, --password PASSWORD
-                        Search by password, only pro account.
-  -ep ENDPOINT, --endpoint ENDPOINT
-                        Search by url endpoint.
-  -C COUNTRY, --country COUNTRY
-                        sort result by country code default is all
-  -A, --all             view all result using "like",this option work only with (-d or --domain),default is False
-  -de, --domain-emails  only result for company "root" domain, this option work only with (-d or --domain), default is False
-  -r, --related         Get related company domains,this option work only with (-d or --domain), default False
-  -s, --scan            scan the company domain (Related company, Clients, Employees, Company ASNs,Company CIDRs/Subnets, Company Apps).
+  -m {cred.username,cred.password,cred.email,cred.phone,cred.email.domain,cred.country,domain,domain.all,ip,ip.asn,ip.isp,ip.org,ip.port,ip.country,app.id,app.name,app.domain,url.path,url.port}, --method {cred.username,cred.password,cred.email,cred.phone,cred.email.domain,cred.country,domain,domain.all,ip,ip.asn,ip.isp,ip.org,ip.port,ip.country,app.id,app.name,app.domain,url.path,url.port}
+                        method to search by it,default is "domain".
+  -vt {full,cred,url,email,phone,password,username,app,domain,ip,related,subdomain}, --view-type {full,cred,url,email,phone,password,username,app,domain,ip,related,subdomain}
+                        type view the result default is "full".
+  -s, --scan            scan the company domain (Related company, Clients, Employees, Company ASNs, Company Apps).
   -sr SCAN_RELATED, --scan-related SCAN_RELATED
                         Run related scan, default is yes, Ex: -sr no
+  -ss SCAN_SUBDOMAINS, --scan-subdomains SCAN_SUBDOMAINS
+                        Run subdomains scan, default is yes, Ex: -ss no
   -sa SCAN_APPS, --scan-apps SCAN_APPS
                         Run App scan, default is yes, Ex: -sa no
+  -si SCAN_IPS, --scan-ips SCAN_IPS
+                        Run IPs scan, default is yes, Ex: -si no
   -sc SCAN_CLIENTS, --scan-clients SCAN_CLIENTS
                         Run clients scan, default is yes, Ex: -sc no
   -se SCAN_EMPLOYEES, --scan-employees SCAN_EMPLOYEES
                         Run employees scan, default is yes, Ex: -se no
   -o OUTPUT, --output OUTPUT
                         filename to save the result
-  -vt {cred,url,subdomain,email,password,username,app,endpoint,port}, --view-type {cred,url,subdomain,email,password,username,app,endpoint,port}
-                        type view the result default is "cred".
   -ot {text,json,csv}, --output-type {text,json,csv}
                         output format default is "text".
-  --init INIT           set the api token.
-  -T TIMEOUT, --timeout TIMEOUT
+  -t TIMEOUT, --timeout TIMEOUT
                         request timeout default is 360 sec.
-  -L LIMIT, --limit LIMIT
+  -l LIMIT, --limit LIMIT
                         limit results default is 10000.
+  -nc, --no-color       show result without color.
+  -lv, --list-view-type
+                        list view type.
+  -lm, --list-methods   list methods.
+  --init INIT           set the api token.
   -v, --version         version.
+```
 
 Examples:
-
-    # Scan company by domain
-    chiasmodon_cli.py --domain example.com --scan
-
-    # Search for target domain, you will see the result for only this "example.com" 
-    chiasmodon_cli.py --domain example.com 
-    
-    # Search for target subdomains
-    chiasmodon_cli.py --domain example.com --all 
-    
-    # Search for target domain, you will see the result for only this "example.com" on United States 
-    chiasmodon_cli.py --domain example.com --country US 
-
-    # Search for related companies by domain
-    chiasmodon_cli.py --domain example.com --related
-
-    # search for target app id 
-    chiasmodon_cli.py --app com.example 
-    
-    # Search for target asn
-    chiasmodon_cli.py --asn AS123 --type-view cred
-
-    # Search for target username
-    chiasmodon_cli.py --username someone --country CA
-
-    # Search for target password
-    chiasmodon_cli.py --password example@123
-
-    # Search for target endpoint
-    chiasmodon_cli.py --endpoint /wp-login.php
-
-    # Search for target cidr
-    chiasmodon_cli.py --cidr x.x.x.x/24
-
-    # Search for target creds by domain emsils
-    chiasmodon_cli.py --domain example.com --domain-emails 
-    chiasmodon_cli.py --domain example.com --domain-emails --output example-creds.json --output-type json
-    chiasmodon_cli.py --domain example.com --domain-emails --view-type email --output example-emails.txt --output-type text
-    
-    # Search for target subdomain
-    chiasmodon_cli.py --domain company.com --view-type subdomain
-    
-    # Search for target email
-    chiasmodon_cli.py --email someone@example.com  
-    chiasmodon_cli.py --email someone@example.com --view-type url 
-
-    # search for multiple targets: 
-    chiasmodon_cli.py --domain targets.txt --output example-creds.txt 
-    chiasmodon_cli.py --domain targets.txt --view-type url --output example-urls.txt 
 ```
+# Scan company by domain
+chiasmodon_cli.py example.com --scan
 
-***How to use pychiasmodon library***:
-```python
-from pychiasmodon import Chiasmodon 
-ch = Chiasmodon()
+# Search for target domain, you will see the result for only this "example.com" 
+chiasmodon_cli.py example.com 
+    
+# Search in target and target subdomains
+chiasmodon_cli.py example.com --method domain.all
+
+# Search for target subdomains
+chiasmodon_cli.py example.com --view-type subdomain
+        
+# Search for all creds in United States 
+chiasmodon_cli.py US --method cred.country
+
+# Search for related companies by domain
+chiasmodon_cli.py example.com --view-type related
+
+# search for target app id 
+chiasmodon_cli.py com.discord --method app.id 
+    
+# search for target app domain 
+chiasmodon_cli.py discord.com --method app.domain
+    
+# search for target app name 
+chiasmodon_cli.py Discord --method app.name
+    
+# Search for ip asn
+chiasmodon_cli.py AS123 --method ip.asn
+
+# Search for cred username
+chiasmodon_cli.py someone --method cred.username
+
+# Search for cred password
+chiasmodon_cli.py example@123 --method cred.password
+
+# Search for url endpoint
+chiasmodon_cli.py /wp-login.php --method url.path
+
+# Search for ip
+chiasmodon_cli.py 1.1.1.1 --method ip
+
+# Search for cidr
+chiasmodon_cli.py xx.xx.xx.0/24 --method ip
+
+# Search for target creds by domain emsils
+chiasmodon_cli.py example.com --method cred.email.domain
+
+# Search for target email
+chiasmodon_cli.py someone@example.com --method cred.email  
+
+# search for multiple targets: 
+chiasmodon_cli.py targets.txt --method domain  --output example-creds.txt 
 ```
-- **Search for target subdomains**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --domain example.com --all
-        ```
-    - *Python*
-        ```python
-        result = ch.search('example.com',method='domain', all=True)
-        
-        for i in result:
-            print(i)
-        ```
-
-- **Searching for target domain, you will see the result for only this "example.com"**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --domain example.com
-        ```
-    - *Python*
-        ```python
-        result = ch.search('example.com',method='domain')
-        
-        for i in result:
-            print(i)
-        ```
-
-- **Searching for target domain, you will see the result for only this "example.com" on United States**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --domain example.com --country US
-        ```
-    - *Python*
-        ```python
-        result = ch.search('example.com',method='domain',country="US")
-        
-        for i in result:
-            print(i)
-        ```
-
-
-- **Searching for target application ID on the Google Play Store**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --app com.discord
-        ```
-    - *Python*
-        ```python
-        result = ch.search('com.example',method='app')
-
-        for i in result:
-            print(i)
-        ```
-
-- **Searching for target ASN**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --asn AS123 --view-type cred
-        ```
-    - *Python*
-        ```python
-        result = ch.search('AS123',method='asn', view_type='cred')
-
-        for i in result:
-            print(i)
-        ```
-
-
-- **earching for target username**:
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --username someone
-        ```
-    - *Python*
-        ```python
-        result = ch.search('someone',method='username')
-
-        for i in result:
-            print(i)
-        ```
-
-- **Searching for target password**:
-
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --password example@123
-        ```
-    - *Python*
-        ```python
-        result = ch.search('example@123',method='password')
-
-        for i in result:
-            print(i)
-        ```
-
-- **Searching for target CIDR**:
-
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --cidr x.x.x.x/24
-        ```
-    - *Python*
-        ```python
-        result = ch.search('x.x.x.x/24',method='cidr')
-
-        for i in result:
-            print(i)
-        ```
-
-- **Searching for target credentials by domain emails**:
-
-    - *Command line*
-        ```bash
-        chiasmodon_cli.py --domain example.com --domain-emails
-        ```
-    - *Python*
-        ```python
-        result = ch.search('example.com',method='domain', only_domain_emails=True)
-
-        for i in result:
-            print(i)
-        ```
-- **All methods and view types**:
-
-    | Methods | View Type   |
-    |-----------------|-----------------|
-    | --domain, --email, --cidr, --app, --asn, --username, --password | --view-type cred        |
-    | --domain, --email, --username, --password       | --view-type app |       
-    | --domain, --email, --cidr, --asn, --username, --password | --view-type url      
-    | --domain                                      |--view-type subdomain |
-    | --domain, --cidr, --asn, --app                      |--view-type email     | 
-    | --domain, --cidr, --app, --asn, --email, --password     |--view-type username  |
-    | --domain, --cidr, --app, --asn, --email, --username     |--view-type password  |
 
 Please note that these examples represent only a fraction of the available options and use cases. Refer to the documentation for more detailed instructions and explore the full range of features provided by Chiasmodon.
 
