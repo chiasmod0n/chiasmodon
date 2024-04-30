@@ -657,11 +657,7 @@ class Result(dict):
         
     
     def print(self,):
-        if self.credPassword:
-            self.credPassword= self.credPassword[0:2] + len(self.credPassword[2::]) * '*'
-        
         c=""
-        
 
         if self.VIEW_TYPE == "email" and self.credEmail:
             c+=f"{T.MAGENTA}[ {T.YELLOW}Email{T.MAGENTA} ]{T.MAGENTA}> {T.CYAN}{self.credEmail}{T.RESET}"
