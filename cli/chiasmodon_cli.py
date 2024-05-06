@@ -210,7 +210,7 @@ class Scan(Chiasmodon):
             client_creds:list[Result] = self.search(
                 query=domain,
                 method='domain.all',
-                view_type='cred',
+                view_type='full',
                 sort=True ,
                 timeout=self.options.timeout,
                 limit=1000000,
@@ -256,9 +256,10 @@ class Scan(Chiasmodon):
             employe_creds = self.search(
                 query=domain,
                 method='cred.email.domain',
-                view_type='cred',
+                view_type='full',
                 sort=True,
                 timeout=self.options.timeout,
+                callback_view_result=self.scan_callback,
                 limit=1000000,
                 yaspin=yaspin,
                 search_text=f'Find {T.GREEN+domain+T.RESET} employees creds...',
@@ -335,7 +336,6 @@ class CLI(Chiasmodon):
 
             if self.options.output_type == "text":
                 if self.result and view_type != 'cred':
-                    self.result = list(set(self.result))
                     self.result.remove(None) if None in self.result else None
                 
                 ULIT.wFile(
@@ -345,7 +345,6 @@ class CLI(Chiasmodon):
 
             if self.options.output_type == "csv":
                 if self.result and view_type != 'cred':
-                    self.result = list(set(self.result))
                     self.result.remove(None) if None in self.result else None
                 
                 ULIT.wFile(

@@ -5,7 +5,7 @@ import requests
 import tldextract
 from yaspin import Spinner 
 
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -433,7 +433,7 @@ class Chiasmodon:
                 self.err=False
                 if yaspin:self.print(f"{T.RED}{self.msg}{T.RESET}", YS, ys_err=True);YS.fail("💥 ");YS.stop()
                 return result
-            
+
             for r in beta_result['data']:
                 
                 column :Result = Result(**r)
@@ -441,12 +441,12 @@ class Chiasmodon:
                 if sort and column in self.__result:
                     continue
                 
-                if callback_view_result:
+                if callback_view_result != None:
                     callback_view_result(beta=column, ys=YS)
 
                 result.append(column)
                 self.__result.append(column)
-              
+
                 if len(result) == limit:
                     if yaspin:YS.text='';YS.stop()
                     return result
@@ -625,10 +625,7 @@ class Result(dict):
         return None 
 
     def __convert_domain(self,domain:dict):
-        if domain['sub']:
-            return f"{domain['sub']}.{domain['name']}.{domain['suffix']}"
-        else:
-            return  f"{domain['name']}.{domain['suffix']}"
+        return f"{(domain['sub']+'.') if domain['sub'] else ''}{domain['name']}{('.'+domain['suffix']) if domain['suffix']  else ''}"
 
 
     def __str__(self) -> str:
