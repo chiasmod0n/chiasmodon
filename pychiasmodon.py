@@ -5,7 +5,7 @@ import time
 import requests
 from yaspin import Spinner 
 
-VERSION = "2.0.4"
+VERSION = "2.0.5"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -296,22 +296,27 @@ class Chiasmodon:
         elif method == 'ip.asn':
             if not query.lower().startswith('as'):
                 self.print(f'{T.RED}Your format query is wrong!\nThe ASN starts with AS\nLike this: AS1234.{T.RESET}')
+                return False
         
         elif method in ['ip.port', 'url.port']:
             if not re.match(r":(\d+)", query):
                 self.print(f'{T.RED}Your format query is wrong!\nThis is not port.{T.RESET}')
+                return False
         
         elif method == 'cred.email':
             if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', query):
                 self.print(f'{T.RED}Your format query is wrong!\nThis is not email.{T.RESET}')
+                return False
         
         elif method == 'cred.country' or method == 'ip.country':
             if not len(query) == 2:
                 self.print(f'{T.RED}Your format query is wrong!\nAccept only country code.{T.RESET}')
+                return False
         
         elif method == 'url.path':
             if not query[0] == '/':
                 self.print(f'{T.RED}Your format query is wrong!\nThe url path moset be like: /somthing{T.RESET}')
+                return False
         
         return query
 

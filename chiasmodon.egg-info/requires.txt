@@ -1,0 +1,4 @@
+argcomplete
+requests
+tldextract
+yaspin
