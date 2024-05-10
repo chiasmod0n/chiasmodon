@@ -5,7 +5,7 @@ import time
 import requests
 from yaspin import Spinner 
 
-VERSION = "2.0.3"
+VERSION = "2.0.4"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -284,32 +284,34 @@ class Chiasmodon:
     def filter(self,query:str,method:str):
 
         if 'domain' in method:
-            self.print(f'{T.RED}Your format query is wrong!\nThis is not domain.{T.RESET}')
-            return query if re.match(r"^(?!.*\d+\.\d+\.\d+\.\d+$)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", query) else False 
+            if not re.match(r"^(?!.*\d+\.\d+\.\d+\.\d+$)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", query):
+                self.print(f'{T.RED}Your format query is wrong!\nThis is not domain.{T.RESET}')
+                return False
 
         elif method == 'ip':
-            self.print(f'{T.RED}Your format query is wrong!\nAccept only ipv4.{T.RESET}')
-            return query if re.match(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", query) else False 
+            if not re.match(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", query):
+                self.print(f'{T.RED}Your format query is wrong!\nAccept only ipv4.{T.RESET}')
+                return False
         
         elif method == 'ip.asn':
-            self.print(f'{T.RED}Your format query is wrong!\nThe ASN starts with AS\nLike this: AS1234.{T.RESET}')
-            return query if query.lower().startswith('as') else False
+            if not query.lower().startswith('as'):
+                self.print(f'{T.RED}Your format query is wrong!\nThe ASN starts with AS\nLike this: AS1234.{T.RESET}')
         
         elif method in ['ip.port', 'url.port']:
-            self.print(f'{T.RED}Your format query is wrong!\nThis is not port.{T.RESET}')
-            return query if re.match(r":(\d+)", query) else False
+            if not re.match(r":(\d+)", query):
+                self.print(f'{T.RED}Your format query is wrong!\nThis is not port.{T.RESET}')
         
         elif method == 'cred.email':
-            self.print(f'{T.RED}Your format query is wrong!\nAccept only country code.{T.RESET}')
-            return query if re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', query) else False   
+            if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', query):
+                self.print(f'{T.RED}Your format query is wrong!\nThis is not email.{T.RESET}')
         
         elif method == 'cred.country' or method == 'ip.country':
-            self.print(f'{T.RED}Your format query is wrong!\nAccept only country code.{T.RESET}')
-            return query if len(query) == 2 else False
+            if not len(query) == 2:
+                self.print(f'{T.RED}Your format query is wrong!\nAccept only country code.{T.RESET}')
         
         elif method == 'url.path':
-            self.print(f'{T.RED}Your format query is wrong!\nThe url path moset be like: /somthing{T.RESET}')
-            return query if query[0] == '/' else False
+            if not query[0] == '/':
+                self.print(f'{T.RED}Your format query is wrong!\nThe url path moset be like: /somthing{T.RESET}')
         
         return query
 
