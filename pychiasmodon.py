@@ -1,11 +1,11 @@
+import re
 import os 
 import sys
 import time
 import requests
-import tldextract
 from yaspin import Spinner 
 
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -281,11 +281,37 @@ class Chiasmodon:
                 self.print(f'{T.RED}{self.msg}{T.RESET}')
                 return
     
-    def filter_domain(self,d) -> str:
-        domain = d.split()[0]
-        x = tldextract.extract(domain)
-        if x.subdomain:return '{}.{}.{}'.format(x.subdomain,x.domain, x.suffix)
-        else:return '{}.{}'.format(x.domain, x.suffix)
+    def filter(self,query:str,method:str):
+
+        if 'domain' in method:
+            self.print(f'{T.RED}Your format query is wrong!\nThis is not domain.{T.RESET}')
+            return query if re.match(r"^(?!.*\d+\.\d+\.\d+\.\d+$)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", query) else False 
+
+        elif method == 'ip':
+            self.print(f'{T.RED}Your format query is wrong!\nAccept only ipv4.{T.RESET}')
+            return query if re.match(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", query) else False 
+        
+        elif method == 'ip.asn':
+            self.print(f'{T.RED}Your format query is wrong!\nThe ASN starts with AS\nLike this: AS1234.{T.RESET}')
+            return query if query.lower().startswith('as') else False
+        
+        elif method in ['ip.port', 'url.port']:
+            self.print(f'{T.RED}Your format query is wrong!\nThis is not port.{T.RESET}')
+            return query if re.match(r":(\d+)", query) else False
+        
+        elif method == 'cred.email':
+            self.print(f'{T.RED}Your format query is wrong!\nAccept only country code.{T.RESET}')
+            return query if re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', query) else False   
+        
+        elif method == 'cred.country' or method == 'ip.country':
+            self.print(f'{T.RED}Your format query is wrong!\nAccept only country code.{T.RESET}')
+            return query if len(query) == 2 else False
+        
+        elif method == 'url.path':
+            self.print(f'{T.RED}Your format query is wrong!\nThe url path moset be like: /somthing{T.RESET}')
+            return query if query[0] == '/' else False
+        
+        return query
 
     def print(self,text, ys=None, ys_err=False) -> None:
         if text == None:return 
@@ -484,12 +510,15 @@ class Chiasmodon:
         
         if method not in _VIEW_TYPE[view_type]:
             raise Exception(f"{T.RED}{view_type} doesn't support ({method}).{T.RESET}")
-
+        
+        
         self.err = False
         self.msg = ''
 
-        if method == 'domain':query = self.filter_domain(query)
-
+        query = self.filter(query, method)
+        if query == False:
+            return
+        
         result = self.__proc_query(
             query=query,
             method=method,
