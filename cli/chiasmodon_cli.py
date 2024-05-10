@@ -103,6 +103,8 @@ class Scan(Chiasmodon):
 
 
     def __scan(self, domain):
+        status = False
+
         print_output = f'{T.MAGENTA}>{T.RESET}{T.YELLOW} Saved output{T.RESET}: \n'
         output = {
             'related':[],
@@ -138,6 +140,7 @@ class Scan(Chiasmodon):
 
 
             if related:
+                status = True
                 output['related'] = [i.save_format() for i in related]
                 ULIT.wFile((self.output_folder / 'related.txt'), '\n'.join(output['related'])) 
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'related.txt')}{T.RESET}\n"
@@ -160,6 +163,7 @@ class Scan(Chiasmodon):
 
 
             if subdomains:
+                status = True
                 output['subdomains'] = [i.save_format() for i in subdomains]
                 ULIT.wFile((self.output_folder / 'subdomains.txt'), '\n'.join(output['subdomains'])) 
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'subdomains.txt')}{T.RESET}\n"
@@ -181,6 +185,7 @@ class Scan(Chiasmodon):
 
 
             if apps:
+                status = True
                 output['apps'] = [i.save_format() for i in apps]
                 ULIT.wFile((self.output_folder / 'apps.txt'), '\n'.join(output['apps'])) 
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'apps.txt')}{T.RESET}\n"
@@ -201,6 +206,7 @@ class Scan(Chiasmodon):
 
 
             if ips:
+                status = True
                 output['ips'] = [i.save_format() for i in ips]
                 ULIT.wFile((self.output_folder / 'ips.txt'), '\n'.join(output['ips'])) 
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'ips.txt')}{T.RESET}\n"
@@ -222,6 +228,7 @@ class Scan(Chiasmodon):
             )
         
             if client_creds:
+                status = True
                 output['client-creds'] =[i.save_format() for i in client_creds]
                 ULIT.wFile((self.output_folder / 'client-creds.txt'), '\n'.join([':'.join(i) for i in output['client-creds']]))
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'client-creds.txt')}{T.RESET}\n"
@@ -267,6 +274,7 @@ class Scan(Chiasmodon):
             )
 
             if employe_creds:
+                status = True
                 output['employe-creds'] =[i.save_format() for i in employe_creds]
                 ULIT.wFile((self.output_folder / 'employe-creds.txt'), '\n'.join([':'.join(i) for i in output['employe-creds']]))
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'employe-creds.txt')}{T.RESET}\n"
@@ -281,11 +289,12 @@ class Scan(Chiasmodon):
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'employe-emails.txt')}{T.RESET}\n"
                 ULIT.wFile((self.output_folder / 'employe-passwords.txt'), '\n'.join(output['employe-passwords']))
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'employe-passwords.txt')}{T.RESET}\n"
-            
-        ULIT.wJsonToFile((self.output_folder / 'scan.json'), output)
-        print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'scan.json')}{T.RESET}"
+        
 
-        self.print(print_output)
+        if status:
+            ULIT.wJsonToFile((self.output_folder / 'scan.json'), output)
+            print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'scan.json')}{T.RESET}"
+            self.print(print_output)
         
 class CLI(Chiasmodon):
     def __init__(self, options:argparse.Namespace) -> None:
