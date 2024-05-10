@@ -1,4 +1,0 @@
-argcomplete
-requests
-tldextract
-yaspin
