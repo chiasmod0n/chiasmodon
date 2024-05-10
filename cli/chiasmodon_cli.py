@@ -145,7 +145,7 @@ class Scan(Chiasmodon):
                 ULIT.wFile((self.output_folder / 'related.txt'), '\n'.join(output['related'])) 
                 print_output += f"\t{T.MAGENTA}-{T.RESET} {T.BLUE}{(self.output_folder / 'related.txt')}{T.RESET}\n"
             else:
-                self.print(f'{T.RED}💥 Not found related !{T.RESET}')
+                self.print(f'{T.RED}💥  Not found related !{T.RESET}')
             self.print(f'{T.MAGENTA}{"-"*30}{T.RESET}')
         if self.options.scan_subdomains.lower() == 'yes':
             subdomains = self.search(
