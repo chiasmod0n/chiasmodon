@@ -5,7 +5,7 @@ import time
 import requests
 from yaspin import Spinner 
 
-VERSION = "2.0.6"
+VERSION = "3.0.0"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -260,7 +260,7 @@ class Chiasmodon:
         self.msg :str              = '' 
         self.__result:list[Result] = []
         self.scan_mode             = False
-        
+
         if not color:
             T.RED      = ''
             T.GREEN    = ''
@@ -280,6 +280,54 @@ class Chiasmodon:
 
                 self.print(f'{T.RED}{self.msg}{T.RESET}')
                 return
+
+    def proc_all_domains(self,
+                query,
+                view_type,
+                sort,
+                timeout,
+                limit,
+                callback_view_result,
+                yaspin,
+                search_text,
+                err_text) -> list:
+        
+
+        domains :list = self.__proc_query(
+                query=query,
+                method='domain',
+                view_type='subdomain',
+                sort=sort,
+                timeout=timeout,
+                limit=limit,
+                callback_view_result=None,
+                yaspin=None,
+                search_text=search_text,
+                err_text=err_text,
+        )
+        self.__result :list = []
+        result :list = []
+        
+        domains = [i.domain for i in domains]
+        if query not in domains:domains.append(query)
+
+        for domain in domains:
+            result.extend(self.__proc_query(
+                query=domain,
+                method='domain',
+                view_type=view_type,
+                sort=sort,
+                timeout=timeout,
+                limit=limit,
+                callback_view_result=callback_view_result,
+                yaspin=yaspin,
+                search_text=search_text.replace(query, domain),
+                err_text=err_text,
+            ))
+            self.__result :list = []
+        
+        return result
+
     
     def filter(self,query:str,method:str):
 
@@ -381,7 +429,6 @@ class Chiasmodon:
                     search_text='',
                     err_text=''
                     ) -> dict:
-        
         Result.VIEW_TYPE = view_type
 
         result : list[Result] = []
@@ -404,17 +451,10 @@ class Chiasmodon:
                 )
 
             if process_info and process_info.get('count') == 0:
-                if method == 'domain' and view_type not in ['app','subdomain'] and not self.scan_mode:
-                    self.print(f"{T.RED}Not found result\nTo view more result try: {T.BLUE}--method domain.all{T.RESET}", sp,ys_err=True)
-
-                elif method == 'domain.all' and view_type not in ['app','subdomain'] and not self.scan_mode:
-                    self.print(f"{T.RED}Not found result\nTo view more result for this target try: {T.BLUE}--method cred.email.domain{T.RESET}", sp,ys_err=True)
-                
+                if not err_text:
+                    self.print(f"{T.RED}Not found result{T.RESET}", sp,ys_err=True)
                 else:
-                    if not err_text:
-                        self.print(f"{T.RED}Not found result{T.RESET}", sp,ys_err=True)
-                    else:
-                        self.print(f"{T.RED}{err_text}{T.RESET}", sp,ys_err=True)
+                    self.print(f"{T.RED}{err_text}{T.RESET}", sp,ys_err=True)
                         
 
                 sp.fail("💥 ")
@@ -441,7 +481,8 @@ class Chiasmodon:
             self.print(f'{T.RED}Error: {self.msg}{T.RESET}',ys_err=True) 
             return
             
-        self.print(f"{T.YELLOW}Pages count{T.YELLOW}: {T.GREEN}{process_info['pages'] if process_info['count'] != -1 else 'unknown'}{T.RESET}")
+        if yaspin: 
+            self.print(f"{T.YELLOW}Pages count{T.YELLOW}: {T.GREEN}{process_info['pages'] if process_info['count'] != -1 else 'unknown'}{T.RESET}")
 
         data['sid'] = process_info['sid']
 
@@ -491,12 +532,10 @@ class Chiasmodon:
             time.sleep(0x1)
 
         if not result:
-            
             if yaspin:self.print(f"{T.RED}Not found result{T.RESET}", YS,ys_err=True);YS.fail("💥 ");YS.stop()
             else:self.print(f"{T.RED}Not found result{T.RESET}")
         else:
             if yaspin:YS.text='';YS.stop()
-
         return result
     
     def search(self,
@@ -521,23 +560,39 @@ class Chiasmodon:
         
         self.err = False
         self.msg = ''
+        result = None
 
         query = self.filter(query, method)
         if query == False:
             return
-        
-        result = self.__proc_query(
-            query=query,
-            method=method,
-            view_type=view_type,
-            sort=sort,
-            timeout=timeout,
-            limit=limit,
-            callback_view_result=callback_view_result,
-            yaspin=yaspin,
-            search_text=search_text,
-            err_text=err_text,
-        )
+
+        if method == "domain.all":
+            result = self.proc_all_domains(
+                query=query,
+                view_type=view_type,
+                sort=sort,
+                timeout=timeout,
+                limit=limit,
+                callback_view_result=callback_view_result,
+                yaspin=yaspin,
+                search_text=search_text,
+                err_text=err_text,
+            )
+
+        else:
+
+            result = self.__proc_query(
+                query=query,
+                method=method,
+                view_type=view_type,
+                sort=sort,
+                timeout=timeout,
+                limit=limit,
+                callback_view_result=callback_view_result,
+                yaspin=yaspin,
+                search_text=search_text,
+                err_text=err_text,
+            )
 
         self.__result:list = []
 
@@ -803,6 +858,7 @@ class Result(dict):
         
         elif self.VIEW_TYPE == 'email':
             return self.credEmail
+
         elif self.VIEW_TYPE == 'phone':
             return self.credPhone
 

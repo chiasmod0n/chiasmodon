@@ -368,7 +368,6 @@ class CLI(Chiasmodon):
                 )
 
 
-
     def proc(self):
 
         query = ULIT.rFile(f).splitlines() if (f:=Path(self.options.query)).is_file() else [self.options.query.strip()] 
