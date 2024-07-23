@@ -1,0 +1,10 @@
+LICENSE.txt
+README.md
+pychiasmodon.py
+setup.py
+chiasmodon.egg-info/PKG-INFO
+chiasmodon.egg-info/SOURCES.txt
+chiasmodon.egg-info/dependency_links.txt
+chiasmodon.egg-info/requires.txt
+chiasmodon.egg-info/top_level.txt
+cli/chiasmodon_cli.py
