@@ -5,7 +5,7 @@ import time
 import requests
 from yaspin import Spinner 
 
-VERSION = "3.0.1"
+VERSION = "3.0.2"
 _API_URL = 'https://chiasmodon.com/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
@@ -600,7 +600,7 @@ class Chiasmodon:
 
 class Result(dict):
     VIEW_TYPE = None
-
+    HID_PASS  = True if os.environ.get('HID_PASS') else False 
     def __init__(self,type,**kwargs) -> None:
         
         self.kwargs         = kwargs
@@ -652,7 +652,7 @@ class Result(dict):
                     self.credEmail = self.__convert_email(kwargs['cred']['email'])
 
                 self.credUsername = kwargs['cred']['username']
-                self.credPassword = kwargs['cred']['password'] 
+                self.credPassword = kwargs['cred']['password'] if not self.HID_PASS else '*'*len(kwargs['cred']['password']) 
                 if kwargs['cred']['phone']:
                     self.credPhone = self.__convert_phone(kwargs['cred']['phone'])
 
