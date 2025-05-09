@@ -187,7 +187,7 @@ Chiasmodon is the result of collaborative efforts from a dedicated team of contr
 
 - [🐍 Python Library](https://pypi.org/project/chiasmodon)
 - [📱 Mobile (APK)](https://github.com/chiasmod0n/chiasmodon-mobile)
-- [🌐 Website](https://chiasmodon.com)
+- [🌐 Website](https://chiasmodon.online)
 - [💬 Telegram](https://t.me/chiasmod0n)
 - [🐦 X/Twitter](https://x.com/chiasmod0n)
 
