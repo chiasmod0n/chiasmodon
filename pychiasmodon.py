@@ -6,7 +6,7 @@ import requests
 from yaspin import Spinner 
 
 VERSION = "3.0.2"
-_API_URL = 'https://chiasmodon.online/v2/api/beta'
+_API_URL = 'http://chiasmodon.online/v2/api/beta'
 _API_HEADERS = {'user-agent':'cli/python'}
 _VIEW_TYPE = {
     'full':[
